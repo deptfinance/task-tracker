@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Task Tracker - Finance Dept</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
+  body{background:#f0f2f5;padding:20px}
+  .header{max-width:1100px;margin:0 auto 24px}
+  .header h1{font-size:24px;color:#1a1a2e}
+  .header p{color:#666;font-size:14px;margin-top:4px}
+  .container{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 360px;gap:20px}
+  @media(max-width:768px){.container{grid-template-columns:1fr;grid-template-rows:auto auto}}
+  
+  /* Stats row */
+  .stats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px;grid-column:1/-1}
+  .stat-card{padding:12px 18px;background:#fff;border-radius:10px;cursor:pointer;border:2px solid transparent;
+    transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.08);flex:1;min-width:120px;text-align:center}
+  .stat-card:hover{border-color:#4361ee;transform:translateY(-1px)}
+  .stat-card.active{border-color:#4361ee;background:#eef0ff}
+  .stat-card .num{font-size:20px;font-weight:700;color:#1a1a2e}
+  .stat-card .label{font-size:12px;color:#888;margin-top:2px}
+
+  /* Search */
+  .search-box{grid-column:1/-1;margin-bottom:4px}
+  .search-box input{width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;
+    outline:none;transition:.2s}
+  .search-box input:focus{border-color:#4361ee;box-shadow:0 0 0 3px rgba(67,97,238,.12)}
+
+  /* Employee list */
+  .employee-list{background:#fff;border-radius:12px;padding:12px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .emp-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;
+    border-radius:8px;cursor:pointer;transition:.15s;border-left:3px solid transparent}
+  .emp-item:hover{background:#f5f7ff;border-left-color:#4361ee}
+  .emp-item .name{font-weight:600;color:#1a1a2e;font-size:14px}
+  .emp-item .divisi{font-size:12px;color:#888}
+  .emp-item .count{background:#eef0ff;color:#4361ee;padding:2px 8px;border-radius:6px;font-size:12px;font-weight:600}
+
+  /* Task panel */
+  .task-panel{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.06);
+    position:sticky;top:20px;min-height:200px}
+  .task-panel .empty{text-align:center;color:#aaa;padding:40px 0;font-size:14px}
+  .task-panel h3{font-size:16px;color:#1a1a2e;margin-bottom:4px}
+  .task-panel .sub{font-size:12px;color:#888;margin-bottom:14px}
+  .task-card{background:#f8f9ff;border-radius:8px;padding:14px;margin-bottom:10px;border-left:3px solid #4361ee}
+  .task-card .title{font-weight:600;font-size:14px;color:#1a1a2e;margin-bottom:6px}
+  .task-card .prompt{font-size:13px;color:#555;line-height:1.5;margin-bottom:8px}
+  .task-card a{display:inline-flex;align-items:center;gap:4px;color:#4361ee;font-size:13px;
+    text-decoration:none;font-weight:500;padding:4px 0}
+  .task-card a:hover{text-decoration:underline}
+  .badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;margin-right:4px}
+  .badge-pending{background:#fff3e0;color:#e65100}
+  .badge-done{background:#e8f5e9;color:#2e7d32}
+  .badge-progress{background:#e3f2fd;color:#1565c0}
+
+  /* Action buttons */
+  .actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;grid-column:1/-1}
+  .btn{padding:8px 16px;border-radius:6px;border:none;font-size:13px;font-weight:500;
+    cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:4px}
+  .btn-primary{background:#4361ee;color:#fff}
+  .btn-primary:hover{background:#3651d4}
+  .btn-outline{background:transparent;border:1px solid #ddd;color:#555}
+  .btn-outline:hover{background:#f5f5f5}
+  .btn-danger{background:#ef5350;color:#fff}
+  .btn-danger:hover{background:#d32f2f}
+  .btn-sm{padding:5px 10px;font-size:12px}
+
+  /* Modal */
+  .modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);
+    z-index:100;justify-content:center;align-items:center}
+  .modal-overlay.show{display:flex}
+  .modal{background:#fff;border-radius:12px;padding:24px;width:90%;max-width:500px;max-height:80vh;overflow-y:auto}
+  .modal h3{font-size:16px;margin-bottom:14px}
+  .modal label{display:block;font-size:13px;color:#555;margin-bottom:4px;margin-top:10px}
+  .modal label:first-child{margin-top:0}
+  .modal input,.modal select,.modal textarea{width:100%;padding:8px 12px;border:1px solid #ddd;
+    border-radius:6px;font-size:13px;outline:none}
+  .modal input:focus,.modal select:focus,.modal textarea:focus{border-color:#4361ee}
+  .modal textarea{min-height:60px;resize:vertical}
+  .modal .btn-row{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📋 Task Tracker — Finance Dept</h1>
+  <p>Klik karyawan untuk lihat tugasnya</p>
+</div>
+
+<div class="container">
+  <!-- Stats -->
+  <div class="stats" id="statsRow"></div>
+
+  <!-- Search -->
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Cari nama karyawan..." oninput="render()">
+  </div>
+
+  <!-- Employee list -->
+  <div class="employee-list" id="empList"></div>
+
+  <!-- Task panel -->
+  <div class="task-panel" id="taskPanel">
+    <div class="empty">👆 Klik karyawan untuk lihat tugas</div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <button class="btn btn-primary" onclick="showModal('tambahKaryawan')">➕ Tambah Karyawan</button>
+    <button class="btn btn-outline" onclick="exportData()">⬇️ Export JSON</button>
+    <button class="btn btn-outline" onclick="document.getElementById('importFile').click()">⬆️ Import JSON</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modalTambahKaryawan">
+  <div class="modal">
+    <h3>➕ Tambah Karyawan</h3>
+    <label>Nama</label>
+    <input id="mNama" placeholder="Nama karyawan">
+    <label>Divisi</label>
+    <select id="mDivisi">
+      <option value="Finance">Finance</option>
+      <option value="Accounting">Accounting</option>
+      <option value="Perpajakan">Perpajakan</option>
+      <option value="Legal & Admin">Legal & Admin</option>
+    </select>
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="closeModal('tambahKaryawan')">Batal</button>
+      <button class="btn btn-primary" onclick="tambahKaryawan()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalTambahTugas">
+  <div class="modal">
+    <h3>➕ Tambah Tugas</h3>
+    <p style="font-size:13px;color:#888" id="tugasFor"></p>
+    <label>Judul Tugas</label>
+    <input id="mJudul" placeholder="Contoh: Laporan Arus Kas Juni">
+    <label>Prompt / Deskripsi</label>
+    <textarea id="mPrompt" placeholder="Jelaskan tugasnya..."></textarea>
+    <label>Link Google Drive</label>
+    <input id="mLink" placeholder="https://drive.google.com/...">
+    <label>Status</label>
+    <select id="mStatus">
+      <option value="Pending">Pending</option>
+      <option value="Progress">In Progress</option>
+      <option value="Done">Done</option>
+    </select>
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="closeModal('tambahTugas')">Batal</button>
+      <button class="btn btn-primary" onclick="tambahTugas()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalEditTugas">
+  <div class="modal">
+    <h3>✏️ Edit Tugas</h3>
+    <p style="font-size:13px;color:#888" id="editTugasFor"></p>
+    <label>Judul Tugas</label>
+    <input id="eJudul">
+    <label>Prompt / Deskripsi</label>
+    <textarea id="ePrompt"></textarea>
+    <label>Link Google Drive</label>
+    <input id="eLink" placeholder="https://drive.google.com/...">
+    <label>Status</label>
+    <select id="eStatus">
+      <option value="Pending">Pending</option>
+      <option value="Progress">In Progress</option>
+      <option value="Done">Done</option>
+    </select>
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="closeModal('editTugas')">Batal</button>
+      <button class="btn btn-danger btn-sm" id="hapusBtn" onclick="hapusTugas()">🗑 Hapus</button>
+      <button class="btn btn-primary" onclick="simpanEditTugas()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ====== DEFAULT DATA ======
+const DEFAULT = {
+  karyawan: {
+    "Rina Amelia": { divisi: "Finance" },
+    "Budi Santoso": { divisi: "Finance" },
+    "Dewi Lestari": { divisi: "Finance" },
+    "Ahmad Fauzi": { divisi: "Perpajakan" },
+    "Siti Nurhaliza": { divisi: "Accounting" },
+    "Rizky Pratama": { divisi: "Accounting" },
+    "Maya Wijaya": { divisi: "Finance" },
+    "Dimas Anggara": { divisi: "Perpajakan" },
+    "Putri Angraini": { divisi: "Legal & Admin" },
+    "Farhan Maulana": { divisi: "Legal & Admin" }
+  },
+  tugas: {
+    "Rina Amelia": [
+      { judul: "Laporan Arus Kas Harian", prompt: "Buat laporan arus kas harian, kirim ke accounting Taiwan jam 9 pagi.", link: "https://drive.google.com/", status: "Progress" },
+      { judul: "Rekonsiliasi Bank", prompt: "Rekonsiliasi bank per 30 Juni. Cocokkan saldo buku besar dengan bank statement.", link: "https://drive.google.com/", status: "Pending" }
+    ],
+    "Budi Santoso": [
+      { judul: "Pengalihan Piutang", prompt: "Buat laporan pengalihan piutang mingguan untuk dikirim ke accounting Taiwan.", link: "https://drive.google.com/", status: "Progress" }
+    ],
+    "Ahmad Fauzi": [
+      { judul: "Laporan Pajak Bulanan", prompt: "Siapkan data PPh 21 dan PPN untuk laporan pajak bulan Juni.", link: "https://drive.google.com/", status: "Pending" },
+      { judul: "Rekap Faktur Pajak", prompt: "Rekap seluruh faktur pajak masuk dan keluar untuk periode Juni 2026.", link: "https://drive.google.com/", status: "Pending" }
+    ],
+    "Dimas Anggara": [
+      { judul: "Input Rupiah", prompt: "Input rupiah ke laporan excel, cek WA dan follow up progress ke pihak eksternal (notaris & konsultan).", link: "https://drive.google.com/", status: "Done" }
+    ]
+  }
+};
+
+// ====== LOAD / SAVE DATA ======
+let data = loadData();
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem('taskTrackerData');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.karyawan && parsed.tugas) return parsed;
+    }
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(DEFAULT));
+}
+
+function saveData() {
+  localStorage.setItem('taskTrackerData', JSON.stringify(data));
+}
+
+// ====== RENDER ======
+let selectedKaryawan = null;
+let filterDivisi = null;
+
+function render() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const list = document.getElementById('empList');
+  const statsRow = document.getElementById('statsRow');
+
+  // Count stats
+  const divisiList = ['Finance','Accounting','Perpajakan','Legal & Admin'];
+  const counts = {};
+  divisiList.forEach(d => counts[d] = 0);
+  Object.keys(data.karyawan).forEach(n => {
+    const d = data.karyawan[n].divisi;
+    if (counts[d] !== undefined) counts[d]++;
+  });
+
+  // Stats HTML
+  let statsHtml = '';
+  const icons = {'Finance':'💰','Accounting':'📊','Perpajakan':'🧾','Legal & Admin':'⚖️'};
+  statsHtml += `<div class="stat-card ${!filterDivisi?'active':''}" onclick="filterDivisi=null;render()">
+    <div class="num">${Object.keys(data.karyawan).length}</div>
+    <div class="label">👥 Semua</div>
+  </div>`;
+  divisiList.forEach(d => {
+    const active = filterDivisi === d ? 'active' : '';
+    statsHtml += `<div class="stat-card ${active}" onclick="filterDivisi='${d}';render()">
+      <div class="num">${counts[d]||0}</div>
+      <div class="label">${icons[d]} ${d}</div>
+    </div>`;
+  });
+  statsRow.innerHTML = statsHtml;
+
+  // Filter & search
+  let names = Object.keys(data.karyawan);
+  if (filterDivisi) names = names.filter(n => data.karyawan[n].divisi === filterDivisi);
+  if (search) names = names.filter(n => n.toLowerCase().includes(search));
+
+  // Employee list HTML
+  if (names.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:30px;color:#aaa">Tidak ada karyawan</div>';
+  } else {
+    let html = '';
+    names.forEach(n => {
+      const d = data.karyawan[n].divisi;
+      const t = data.tugas[n] || [];
+      const active = selectedKaryawan === n ? 'style="background:#eef0ff;border-left-color:#4361ee"' : '';
+      html += `<div class="emp-item" ${active} onclick="pilihKaryawan('${n}')">
+        <div><div class="name">${n}</div><div class="divisi">${d}</div></div>
+        <div class="count">${t.length} tugas</div>
+      </div>`;
+    });
+    list.innerHTML = html;
+  }
+
+  // Task panel
+  if (selectedKaryawan && data.karyawan[selectedKaryawan]) {
+    renderTasks(selectedKaryawan);
+  } else {
+    document.getElementById('taskPanel').innerHTML = '<div class="empty">👆 Klik karyawan untuk lihat tugas</div>';
+  }
+}
+
+function pilihKaryawan(n) {
+  selectedKaryawan = n;
+  render();
+}
+
+function renderTasks(n) {
+  const panel = document.getElementById('taskPanel');
+  const d = data.karyawan[n];
+  const t = data.tugas[n] || [];
+
+  let html = `<div style="display:flex;justify-content:space-between;align-items:start">
+    <div><h3>${n}</h3><div class="sub">${d.divisi} · ${t.length} tugas</div></div>
+    <button class="btn btn-primary btn-sm" onclick="showModalTambahTugas('${n}')">➕ Tugas</button>
+  </div>`;
+
+  if (t.length === 0) {
+    html += '<div style="text-align:center;padding:20px;color:#aaa">Belum ada tugas</div>';
+  } else {
+    t.forEach((task, idx) => {
+      const badgeClass = task.status === 'Done' ? 'badge-done' : task.status === 'Progress' ? 'badge-progress' : 'badge-pending';
+      html += `<div class="task-card" onclick="showModalEditTugas('${n}',${idx})" style="cursor:pointer">
+        <div class="title">${task.judul} <span class="badge ${badgeClass}">${task.status}</span></div>
+        <div class="prompt">${task.prompt}</div>
+        ${task.link ? `<a href="${task.link}" target="_blank" onclick="event.stopPropagation()">🔗 Buka Google Drive</a>` : ''}
+      </div>`;
+    });
+  }
+  panel.innerHTML = html;
+}
+
+// ====== MODALS ======
+function showModal(id) {
+  document.getElementById('modal' + capitalize(id)).classList.add('show');
+}
+function closeModal(id) {
+  document.getElementById('modal' + capitalize(id)).classList.remove('show');
+}
+function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+// Tambah Karyawan
+function tambahKaryawan() {
+  const nama = document.getElementById('mNama').value.trim();
+  const divisi = document.getElementById('mDivisi').value;
+  if (!nama) return alert('Nama harus diisi');
+  if (data.karyawan[nama]) return alert('Karyawan sudah ada');
+  data.karyawan[nama] = { divisi };
+  data.tugas[nama] = [];
+  saveData();
+  document.getElementById('mNama').value = '';
+  closeModal('tambahKaryawan');
+  render();
+}
+
+// Tambah Tugas
+let tugasKaryawan = null;
+function showModalTambahTugas(n) {
+  tugasKaryawan = n;
+  document.getElementById('tugasFor').textContent = 'Untuk: ' + n;
+  document.getElementById('mJudul').value = '';
+  document.getElementById('mPrompt').value = '';
+  document.getElementById('mLink').value = '';
+  document.getElementById('mStatus').value = 'Pending';
+  showModal('tambahTugas');
+}
+function tambahTugas() {
+  const judul = document.getElementById('mJudul').value.trim();
+  const prompt = document.getElementById('mPrompt').value.trim();
+  const link = document.getElementById('mLink').value.trim();
+  const status = document.getElementById('mStatus').value;
+  if (!judul) return alert('Judul tugas harus diisi');
+  if (!data.tugas[tugasKaryawan]) data.tugas[tugasKaryawan] = [];
+  data.tugas[tugasKaryawan].push({ judul, prompt, link, status });
+  saveData();
+  closeModal('tambahTugas');
+  renderTasks(tugasKaryawan);
+}
+
+// Edit Tugas
+let editKaryawan = null, editIdx = null;
+function showModalEditTugas(n, idx) {
+  editKaryawan = n;
+  editIdx = idx;
+  const task = data.tugas[n][idx];
+  document.getElementById('editTugasFor').textContent = n + ' — ' + task.judul;
+  document.getElementById('eJudul').value = task.judul;
+  document.getElementById('ePrompt').value = task.prompt || '';
+  document.getElementById('eLink').value = task.link || '';
+  document.getElementById('eStatus').value = task.status;
+  document.getElementById('hapusBtn').style.display = 'inline-flex';
+  showModal('editTugas');
+}
+function simpanEditTugas() {
+  const judul = document.getElementById('eJudul').value.trim();
+  const prompt = document.getElementById('ePrompt').value.trim();
+  const link = document.getElementById('eLink').value.trim();
+  const status = document.getElementById('eStatus').value;
+  if (!judul) return alert('Judul harus diisi');
+  data.tugas[editKaryawan][editIdx] = { judul, prompt, link, status };
+  saveData();
+  closeModal('editTugas');
+  renderTasks(editKaryawan);
+}
+function hapusTugas() {
+  if (!confirm('Hapus tugas ini?')) return;
+  data.tugas[editKaryawan].splice(editIdx, 1);
+  saveData();
+  closeModal('editTugas');
+  renderTasks(editKaryawan);
+}
+
+// ====== EXPORT / IMPORT ======
+function exportData() {
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'task_tracker_data.json';
+  a.click();
+}
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const imported = JSON.parse(ev.target.result);
+      if (imported.karyawan && imported.tugas) {
+        data = imported;
+        saveData();
+        render();
+        alert('Data berhasil diimport!');
+      } else {
+        alert('Format file tidak valid');
+      }
+    } catch(e) { alert('File rusak atau bukan JSON'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('show');
+  });
+});
+
+// Init
+render();
+</script>
+</body>
+</html>
