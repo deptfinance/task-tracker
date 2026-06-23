@@ -5,785 +5,504 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PROMPT AI — Task Management</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
 body {
   font-family: 'Inter', sans-serif;
-  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  background: #0d1117;
   min-height: 100vh;
-  color: #fff;
-  padding: 20px;
+  color: #e6edf3;
+  padding: 24px;
 }
-
-/* Animated Background */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: radial-gradient(circle at 20% 50%, rgba(255,107,107,0.08) 0%, transparent 50%),
-              radial-gradient(circle at 80% 50%, rgba(72,202,228,0.08) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.container {
-  max-width: 1400px;
-  margin: 0 auto;
-  position: relative;
-  z-index: 1;
-}
-
-/* Header */
-.header {
-  text-align: center;
-  padding: 40px 20px;
-  position: relative;
-}
-
-.header h1 {
-  font-size: 3.5rem;
-  font-weight: 900;
-  background: linear-gradient(135deg, #ff6b6b, #ffa500, #ffd93d, #6bcb77, #4d96ff, #9b59b6);
-  background-size: 300% 300%;
+.container { max-width: 1400px; margin: 0 auto; }
+.header { text-align: center; padding: 32px 20px 24px; }
+.header h1 { font-size: 2.5rem; font-weight: 800; color: #f0f6fc; letter-spacing: -0.5px; }
+.header h1 span {
+  background: linear-gradient(135deg, #58a6ff, #bc8cff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: gradientShift 4s ease infinite;
-  letter-spacing: -1px;
 }
+.header p { color: #8b949e; font-size: 1rem; margin-top: 8px; }
+.divider { height: 2px; background: linear-gradient(90deg, transparent, #30363d, transparent); margin: 16px 0 24px; }
 
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.header p {
-  color: rgba(255,255,255,0.6);
-  font-size: 1.1rem;
-  margin-top: 10px;
-  font-weight: 500;
-}
-
-/* Stats Cards */
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 30px;
-}
-
-.stat-card {
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 16px;
-  padding: 20px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: -50%; left: -50%; right: -50%; bottom: -50%;
-  background: conic-gradient(from var(--angle, 0deg), transparent, var(--glow-color, rgba(255,255,255,0.1)), transparent);
-  animation: rotateGlow 4s linear infinite;
-}
-
-@keyframes rotateGlow {
-  to { --angle: 360deg; }
-}
-
-@property --angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
-.stat-card:hover {
-  transform: translateY(-4px) scale(1.02);
-  border-color: var(--glow-color, rgba(255,255,255,0.3));
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 20px var(--glow-color, transparent);
-}
-
-.stat-card .emoji { font-size: 2rem; margin-bottom: 8px; }
-.stat-card .label { font-size: 0.85rem; color: rgba(255,255,255,0.7); font-weight: 500; }
-.stat-card .count { font-size: 1.5rem; font-weight: 800; margin-top: 4px; }
-.stat-card .tasks-total { font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-top: 2px; }
-.stat-card.active {
-  border-color: var(--glow-color);
-  box-shadow: 0 0 20px var(--glow-color), inset 0 0 20px rgba(255,255,255,0.05);
-}
-
-/* Colors per stat */
-.stat-card[data-divisi="Finance"] { --glow-color: #ff6b6b; }
-.stat-card[data-divisi="Accounting"] { --glow-color: #ffd93d; }
-.stat-card[data-divisi="Perpajakan"] { --glow-color: #6bcb77; }
-.stat-card[data-divisi="Legal & Admin"] { --glow-color: #4d96ff; }
-.stat-card[data-divisi="Semua"] { --glow-color: #9b59b6; }
-
-/* Search */
-.search-bar {
-  display: flex;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
   margin-bottom: 24px;
-  flex-wrap: wrap;
 }
-
-.search-bar input {
-  flex: 1;
-  min-width: 200px;
-  padding: 14px 20px;
-  border: 1px solid rgba(255,255,255,0.1);
+.stat-card {
+  background: #161b22;
+  border: 1px solid #30363d;
   border-radius: 12px;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
-  color: #fff;
-  font-size: 1rem;
+  padding: 18px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-left: 4px solid var(--accent, #58a6ff);
+}
+.stat-card:hover { background: #1c2333; border-color: var(--accent, #58a6ff); transform: translateY(-2px); }
+.stat-card.active {
+  background: rgba(88,166,255,0.08);
+  border-color: var(--accent, #58a6ff);
+  box-shadow: 0 0 0 1px var(--accent, #58a6ff);
+}
+.stat-card .emoji { font-size: 1.5rem; margin-bottom: 4px; }
+.stat-card .label { font-size: 0.8rem; color: #8b949e; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-card .count { font-size: 1.8rem; font-weight: 800; color: #f0f6fc; margin-top: 2px; }
+.stat-card .tasks-total { font-size: 0.75rem; color: #484f58; margin-top: 2px; }
+
+.stat-card[data-divisi="Finance"] { --accent: #ff7b72; }
+.stat-card[data-divisi="Accounting"] { --accent: #d2a8ff; }
+.stat-card[data-divisi="Perpajakan"] { --accent: #7ee787; }
+.stat-card[data-divisi="Legal & Admin"] { --accent: #79c0ff; }
+.stat-card[data-divisi="Semua"] { --accent: #ffa657; }
+
+.toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.search-bar {
+  flex: 1;
+  min-width: 220px;
+  padding: 12px 16px;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  background: #161b22;
+  color: #e6edf3;
+  font-size: 0.9rem;
   font-family: 'Inter', sans-serif;
-  transition: all 0.3s;
+  transition: border-color 0.2s;
 }
-
-.search-bar input:focus {
-  outline: none;
-  border-color: #4d96ff;
-  box-shadow: 0 0 20px rgba(77,150,255,0.2);
-}
-
-.search-bar input::placeholder { color: rgba(255,255,255,0.3); }
+.search-bar:focus { outline: none; border-color: #58a6ff; }
+.search-bar::placeholder { color: #484f58; }
 
 .btn {
-  padding: 14px 24px;
-  border: none;
-  border-radius: 12px;
+  padding: 12px 20px;
+  border: 1px solid #30363d;
+  border-radius: 8px;
   font-family: 'Inter', sans-serif;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   cursor: pointer;
-  transition: all 0.3s;
-  display: flex;
+  transition: all 0.2s;
+  background: #21262d;
+  color: #e6edf3;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
+.btn:hover { background: #30363d; border-color: #8b949e; }
+.btn-primary { background: #238636; border-color: #2ea043; color: #fff; }
+.btn-primary:hover { background: #2ea043; }
+.btn-danger { background: #da3633; border-color: #f85149; color: #fff; }
+.btn-danger:hover { background: #f85149; }
+.btn-add { background: #1f6feb; border-color: #388bfd; color: #fff; }
+.btn-add:hover { background: #388bfd; }
 
-.btn-primary {
-  background: linear-gradient(135deg, #4d96ff, #9b59b6);
-  color: #fff;
-  box-shadow: 0 4px 15px rgba(77,150,255,0.3);
-}
-
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(77,150,255,0.4); }
-
-.btn-secondary {
-  background: rgba(255,255,255,0.1);
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.15);
-}
-
-.btn-secondary:hover { background: rgba(255,255,255,0.15); }
-
-.btn-success { background: linear-gradient(135deg, #6bcb77, #2d9e3f); color: #fff; box-shadow: 0 4px 15px rgba(107,203,119,0.3); }
-.btn-danger { background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: #fff; box-shadow: 0 4px 15px rgba(255,107,107,0.3); }
-.btn-warning { background: linear-gradient(135deg, #ffd93d, #f0932b); color: #1a1a2e; }
-
-/* Employee Grid */
 .employee-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 20px;
 }
-
 .emp-card {
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 16px;
-  padding: 20px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  padding: 16px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
+  transition: all 0.2s;
 }
-
-.emp-card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--card-color, #4d96ff), var(--card-color2, #9b59b6));
-  opacity: 0.7;
-}
-
-.emp-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(255,255,255,0.2);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-}
-
-.emp-card .name { font-size: 1.1rem; font-weight: 700; }
-.emp-card .divisi { font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 4px; display: flex; align-items: center; gap: 6px; }
-.emp-card .task-count { 
-  position: absolute; top: 16px; right: 16px;
-  background: var(--card-color, #4d96ff);
-  color: #fff;
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.75rem; font-weight: 700;
-}
-
-/* Task Detail Panel */
-.task-panel {
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.12);
+.emp-card:hover { border-color: #8b949e; background: #1c2333; }
+.emp-card .name { font-weight: 600; font-size: 1rem; color: #f0f6fc; }
+.emp-card .divisi-tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 2px 10px;
   border-radius: 20px;
-  padding: 30px;
-  margin-top: 20px;
+  margin-top: 6px;
+  font-weight: 600;
+  color: #fff;
+}
+.emp-card .task-count { font-size: 0.8rem; color: #8b949e; margin-top: 6px; }
+
+.task-panel {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
   display: none;
-  animation: slideUp 0.3s ease;
 }
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.task-panel.show { display: block; }
-
-.task-panel .panel-header {
+.task-panel.open { display: block; }
+.task-panel .emp-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #30363d;
 }
-
-.task-panel .panel-title { font-size: 1.3rem; font-weight: 700; }
-.task-panel .panel-subtitle { font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+.task-panel .emp-header h3 { font-size: 1.3rem; font-weight: 700; color: #f0f6fc; }
+.task-panel .emp-header .divisi-tag {
+  font-size: 0.75rem;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-weight: 600;
+  color: #fff;
+}
 
 .task-card {
-  background: rgba(0,0,0,0.2);
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 12px;
-  border-left: 3px solid var(--card-color, #4d96ff);
-  transition: all 0.3s;
-}
-
-.task-card:hover { background: rgba(0,0,0,0.3); }
-
-.task-card .task-title {
-  font-weight: 600;
-  font-size: 1rem;
-  margin-bottom: 8px;
-  color: var(--card-color, #4d96ff);
-}
-
-.task-card .task-prompt {
-  font-size: 0.9rem;
-  color: rgba(255,255,255,0.75);
-  line-height: 1.6;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  padding: 16px;
   margin-bottom: 12px;
 }
-
+.task-card .task-title { font-weight: 700; font-size: 1rem; color: #f0f6fc; margin-bottom: 8px; }
+.task-card .task-prompt { font-size: 0.9rem; color: #c9d1d9; line-height: 1.6; margin-bottom: 10px; white-space: pre-wrap; }
 .task-card .task-link {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 16px;
-  background: rgba(77,150,255,0.15);
-  border: 1px solid rgba(77,150,255,0.3);
-  border-radius: 8px;
-  color: #4d96ff;
-  text-decoration: none;
+  color: #58a6ff;
   font-size: 0.85rem;
   font-weight: 500;
-  transition: all 0.3s;
+  text-decoration: none;
+  padding: 6px 12px;
+  background: rgba(88,166,255,0.08);
+  border-radius: 6px;
+  transition: background 0.2s;
 }
+.task-card .task-link:hover { background: rgba(88,166,255,0.15); }
 
-.task-card .task-link:hover {
-  background: rgba(77,150,255,0.25);
-  border-color: #4d96ff;
-}
+.empty { text-align: center; padding: 60px 20px; color: #484f58; }
+.empty .emoji { font-size: 3rem; margin-bottom: 12px; }
+.empty p { font-size: 1rem; }
 
-/* Modal */
 .modal-overlay {
   display: none;
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(8px);
+  background: rgba(0,0,0,0.7);
   z-index: 1000;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
-
-.modal-overlay.show { display: flex; }
-
+.modal-overlay.open { display: flex; }
 .modal {
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 20px;
-  padding: 30px;
-  width: 90%;
-  max-width: 500px;
-  max-height: 80vh;
-  overflow-y: auto;
-  animation: slideUp 0.3s ease;
-}
-
-.modal h3 { font-size: 1.3rem; margin-bottom: 20px; }
-
-.modal input, .modal textarea, .modal select {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 14px;
+  padding: 28px;
   width: 100%;
-  padding: 12px 16px;
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 10px;
-  background: rgba(255,255,255,0.05);
-  color: #fff;
-  font-family: 'Inter', sans-serif;
+  max-width: 550px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+.modal h3 { font-size: 1.2rem; font-weight: 700; color: #f0f6fc; margin-bottom: 16px; }
+.modal label { display: block; font-size: 0.85rem; font-weight: 600; color: #c9d1d9; margin-bottom: 4px; margin-top: 14px; }
+.modal input, .modal select, .modal textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  background: #0d1117;
+  color: #e6edf3;
   font-size: 0.9rem;
-  margin-bottom: 12px;
-  transition: all 0.3s;
+  font-family: 'Inter', sans-serif;
 }
-
-.modal input:focus, .modal textarea:focus, .modal select:focus {
-  outline: none;
-  border-color: #4d96ff;
-  box-shadow: 0 0 15px rgba(77,150,255,0.15);
-}
-
 .modal textarea { min-height: 80px; resize: vertical; }
-.modal label { font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 4px; display: block; }
+.modal input:focus, .modal select:focus, .modal textarea:focus { outline: none; border-color: #58a6ff; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
 
-.modal-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 16px;
-  flex-wrap: wrap;
-}
-
-.modal-actions .btn { flex: 1; justify-content: center; }
-
-/* Empty state */
-.empty {
-  text-align: center;
-  padding: 60px 20px;
-  color: rgba(255,255,255,0.4);
-}
-
-.empty .emoji { font-size: 4rem; margin-bottom: 16px; }
-.empty p { font-size: 1.1rem; }
-
-/* Toast */
 .toast {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
-  padding: 16px 24px;
-  border-radius: 12px;
-  font-weight: 500;
+  bottom: 24px;
+  right: 24px;
+  padding: 14px 24px;
+  border-radius: 10px;
   font-size: 0.9rem;
+  font-weight: 600;
+  background: #238636;
+  color: #fff;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.3s;
   z-index: 2000;
-  animation: slideUp 0.3s ease;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
 }
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.error { background: #da3633; }
 
-.toast.success { background: linear-gradient(135deg, #6bcb77, #2d9e3f); color: #fff; }
-.toast.error { background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: #fff; }
-.toast.info { background: linear-gradient(135deg, #4d96ff, #9b59b6); color: #fff; }
+.tag-finance { background: #ff7b72; }
+.tag-accounting { background: #d2a8ff; }
+.tag-perpajakan { background: #7ee787; color: #0d1117 !important; }
+.tag-legal { background: #79c0ff; color: #0d1117 !important; }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .header h1 { font-size: 2rem; }
-  .stats { grid-template-columns: repeat(2, 1fr); }
-  .employee-grid { grid-template-columns: 1fr; }
-  .search-bar { flex-direction: column; }
-  .search-bar .btn { width: 100%; justify-content: center; }
+@media (max-width: 600px) {
+  body { padding: 12px; }
+  .header h1 { font-size: 1.6rem; }
+  .stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .stat-card { padding: 14px 10px; }
+  .stat-card .count { font-size: 1.4rem; }
 }
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
 </style>
 </head>
 <body>
-
 <div class="container">
-  <div class="header">
-    <h1>🚀 PROMPT AI</h1>
-    <p>Task Management — Finance Department</p>
-  </div>
-
-  <!-- Stats -->
-  <div class="stats" id="statsContainer"></div>
-
-  <!-- Search & Actions -->
-  <div class="search-bar">
-    <input type="text" id="searchInput" placeholder="🔍 Cari karyawan..." oninput="renderCards()">
-    <button class="btn btn-primary" onclick="openModal()">➕ Tambah Karyawan</button>
-    <button class="btn btn-secondary" onclick="exportData()">⬇️ Export JSON</button>
-    <button class="btn btn-secondary" onclick="document.getElementById('importInput').click()">⬆️ Import JSON</button>
-    <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)">
-  </div>
-
-  <!-- Employee Grid -->
-  <div class="employee-grid" id="empGrid"></div>
-
-  <!-- Task Panel -->
-  <div class="task-panel" id="taskPanel"></div>
+<div class="header">
+  <h1>PROMPT <span>AI</span></h1>
+  <p>Task Management & Prompt Tracker</p>
+</div>
+<div class="divider"></div>
+<div class="stats" id="statsContainer"></div>
+<div class="toolbar">
+  <input type="text" class="search-bar" id="searchInput" placeholder="Cari karyawan..." oninput="renderEmployees()">
+  <button class="btn btn-add" onclick="openModal('add')">+ Tambah</button>
+  <button class="btn" onclick="exportData()">Export</button>
+  <button class="btn" onclick="document.getElementById('importFile').click()">Import</button>
+  <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+  <button class="btn btn-danger" onclick="if(confirm('Hapus SEMUA data?')){localStorage.removeItem('promptAiData');location.reload();}">Reset</button>
+</div>
+<div id="employeeGrid" class="employee-grid"></div>
+<div id="taskPanel" class="task-panel"></div>
 </div>
 
-<!-- Modal -->
-<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+<div class="modal-overlay" id="modalOverlay">
   <div class="modal">
-    <h3 id="modalTitle">Tambah Karyawan</h3>
-    <form id="modalForm">
-      <label>Nama Karyawan</label>
-      <input type="text" id="inputNama" placeholder="Nama lengkap" required>
-      
-      <label>Divisi</label>
-      <select id="inputDivisi">
-        <option value="Finance">💰 Finance</option>
-        <option value="Accounting">📊 Accounting</option>
-        <option value="Perpajakan">🧾 Perpajakan</option>
-        <option value="Legal & Admin">⚖️ Legal & Admin</option>
+    <h3 id="modalTitle">Tambah Data</h3>
+    <label>Divisi
+      <select id="modalDivisi">
+        <option value="Finance">Finance</option>
+        <option value="Accounting">Accounting</option>
+        <option value="Perpajakan">Perpajakan</option>
+        <option value="Legal & Admin">Legal & Admin</option>
       </select>
-
-      <label>Judul Tugas 1</label>
-      <input type="text" id="inputJudul1" placeholder="Contoh: Laporan Arus Kas">
-
-      <label>Prompt / Deskripsi Tugas 1</label>
-      <textarea id="inputPrompt1" placeholder="Deskripsi tugas..."></textarea>
-
-      <label>Link Google Drive 1</label>
-      <input type="url" id="inputLink1" placeholder="https://drive.google.com/...">
-
-      <label>Judul Tugas 2 (opsional)</label>
-      <input type="text" id="inputJudul2" placeholder="Contoh: Rekonsiliasi Bank">
-
-      <label>Prompt / Deskripsi Tugas 2</label>
-      <textarea id="inputPrompt2" placeholder="Deskripsi tugas..."></textarea>
-
-      <label>Link Google Drive 2</label>
-      <input type="url" id="inputLink2" placeholder="https://drive.google.com/...">
-
-      <input type="hidden" id="editId" value="">
-      <div class="modal-actions">
-        <button type="submit" class="btn btn-success" id="modalSubmit">✅ Simpan</button>
-        <button type="button" class="btn btn-secondary" onclick="closeModal()">❌ Batal</button>
-      </div>
-    </form>
+    </label>
+    <label>Nama Karyawan <input type="text" id="modalNama" placeholder="Nama lengkap"></label>
+    <label>Judul Tugas <input type="text" id="modalJudul" placeholder="Contoh: Laporan Arus Kas Harian"></label>
+    <label>Prompt Tugas <textarea id="modalPrompt" placeholder="Deskripsi tugas / prompt ..."></textarea></label>
+    <label>Link Google Drive <input type="url" id="modalLink" placeholder="https://drive.google.com/..."></label>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Batal</button>
+      <button class="btn btn-primary" id="modalSaveBtn" onclick="saveModal()">Simpan</button>
+    </div>
   </div>
 </div>
+<div id="toast" class="toast"></div>
 
 <script>
-let DATA = JSON.parse(localStorage.getItem('promptAiData')) || {
-  "Finance": {
-    "emoji": "💰",
-    "color": "#ff6b6b",
-    "color2": "#ee5a24",
-    "employees": [
-      { "name": "Rina Amelia", "tasks": [{"judul": "Laporan Arus Kas Harian", "prompt": "Menyusun laporan arus kas harian dalam IDR & USD", "link": "https://drive.google.com"}] },
-      { "name": "Budi Santoso", "tasks": [{"judul": "Rekonsiliasi Bank", "prompt": "Rekonsiliasi bank bulan Juni 2026", "link": "https://drive.google.com"}] }
-    ]
-  },
-  "Accounting": {
-    "emoji": "📊",
-    "color": "#ffd93d",
-    "color2": "#f0932b",
-    "employees": [
-      { "name": "Dewi Lestari", "tasks": [{"judul": "Jurnal Penyesuaian", "prompt": "Membuat jurnal penyesuaian akhir bulan", "link": "https://drive.google.com"}] }
-    ]
-  },
-  "Perpajakan": {
-    "emoji": "🧾",
-    "color": "#6bcb77",
-    "color2": "#2d9e3f",
-    "employees": [
-      { "name": "Ahmad Fauzi", "tasks": [{"judul": "PPh 21 Tahunan", "prompt": "Menyiapkan data PPh 21 pegawai", "link": "https://drive.google.com"}, {"judul": "PPN Masa", "prompt": "Rekap PPN masa Juni", "link": "https://drive.google.com"}] }
-    ]
-  },
-  "Legal & Admin": {
-    "emoji": "⚖️",
-    "color": "#4d96ff",
-    "color2": "#3742fa",
-    "employees": [
-      { "name": "Dimas Anggara", "tasks": [{"judul": "Review Kontrak Vendor", "prompt": "Review kontrak vendor IT support", "link": "https://drive.google.com"}] }
+const DEFAULT_DATA = {
+  divisions: {
+    "Finance": [
+      { name: "Rina Amelia", tasks: [
+        { title: "Laporan Arus Kas Harian", prompt: "Buat laporan arus kas harian dari data transaksi yang sudah diinput. Format: Tanggal, Uang Masuk, Uang Keluar, Saldo Akhir.", link: "https://drive.google.com" },
+        { title: "Rekonsiliasi Bank", prompt: "Cocokkan saldo bank dengan catatan internal. Tandai perbedaan dan buat jurnal penyesuaian.", link: "https://drive.google.com" }
+      ]},
+      { name: "Budi Santoso", tasks: [
+        { title: "Laporan Hutang-Piutang", prompt: "Buat daftar piutang yang jatuh tempo minggu ini. Sertakan nama customer, jumlah, dan status.", link: "https://drive.google.com" }
+      ]}
+    ],
+    "Accounting": [
+      { name: "Dewi Lestari", tasks: [
+        { title: "Jurnal Penyesuaian Akhir Bulan", prompt: "Buat jurnal penyesuaian akhir bulan. Cek: beban dibayar dimuka, penyusutan, pendapatan diterima dimuka.", link: "https://drive.google.com" }
+      ]}
+    ],
+    "Perpajakan": [
+      { name: "Ahmad Fauzi", tasks: [
+        { title: "Perhitungan PPh 21", prompt: "Hitung PPh 21 karyawan tetap bulan ini. Gunakan tarif progresif Pasal 17. Sertikan PTKP masing-masing.", link: "https://drive.google.com" },
+        { title: "Laporan PPN Masa", prompt: "Rekap faktur pajak masukan dan keluaran. Hitung PPN kurang/lebih bayar.", link: "https://drive.google.com" }
+      ]}
+    ],
+    "Legal & Admin": [
+      { name: "Maya Wijaya", tasks: [
+        { title: "Draft Perjanjian Kerjasama", prompt: "Buat draft perjanjian kerjasama antara PT HongYi dengan vendor. Sertakan klausul: lingkup kerja, harga, termin pembayaran, force majeure.", link: "https://drive.google.com" }
+      ]}
     ]
   }
 };
 
-function saveData() {
-  localStorage.setItem('promptAiData', JSON.stringify(DATA));
-  renderCards();
-  renderStats();
+let data = JSON.parse(localStorage.getItem('promptAiData'));
+if (!data || !data.divisions) { data = JSON.parse(JSON.stringify(DEFAULT_DATA)); saveData(); }
+
+let activeFilter = null;
+let selectedEmployee = null;
+let editingMode = null;
+let editingEmployeeIndex = null;
+let editingTaskIndex = null;
+
+function saveData() { localStorage.setItem('promptAiData', JSON.stringify(data)); }
+
+function getAllEmployees() {
+  const list = [];
+  for (const [divisi, employees] of Object.entries(data.divisions))
+    for (const emp of employees) list.push({ ...emp, divisi });
+  return list;
+}
+
+function getDivisionCounts() {
+  const counts = {};
+  for (const [divisi, employees] of Object.entries(data.divisions)) {
+    let totalTasks = 0;
+    for (const emp of employees) totalTasks += (emp.tasks || []).length;
+    counts[divisi] = { karyawan: employees.length, tasks: totalTasks };
+  }
+  return counts;
 }
 
 function renderStats() {
   const container = document.getElementById('statsContainer');
-  const total = Object.values(DATA).reduce((sum, d) => sum + d.employees.reduce((s, e) => s + e.tasks.length, 0), 0);
-  const allEmps = Object.values(DATA).reduce((sum, d) => sum + d.employees.length, 0);
-  let html = `<div class="stat-card" data-divisi="Semua" onclick="filterDivisi=''; renderCards(); document.querySelectorAll('.stat-card').forEach(c=>c.classList.remove('active')); this.classList.add('active')" style="--glow-color:#9b59b6">
-    <div class="emoji">📋</div>
-    <div class="label">Semua Divisi</div>
-    <div class="count">${allEmps}</div>
-    <div class="tasks-total">${total} tugas</div>
-  </div>`;
-  Object.entries(DATA).forEach(([divisi, d]) => {
-    const taskCount = d.employees.reduce((s, e) => s + e.tasks.length, 0);
-    const empCount = d.employees.length;
-    html += `<div class="stat-card" data-divisi="${divisi}" onclick="filterDivisi='${divisi}'; renderCards(); document.querySelectorAll('.stat-card').forEach(c=>c.classList.remove('active')); this.classList.add('active')" style="--glow-color:${d.color}">
-      <div class="emoji">${d.emoji}</div>
-      <div class="label">${divisi}</div>
-      <div class="count">${empCount}</div>
-      <div class="tasks-total">${taskCount} tugas</div>
-    </div>`;
-  });
+  const counts = getDivisionCounts();
+  const allTotal = Object.values(counts).reduce((a,b) => a + b.tasks, 0);
+  const allKaryawan = Object.values(counts).reduce((a,b) => a + b.karyawan, 0);
+  const emojiMap = { "Finance":"Finance","Accounting":"Accounting","Perpajakan":"Perpajakan","Legal & Admin":"Legal & Admin" };
+  let html = '<div class="stat-card '+(activeFilter===null?'active':'')+'" data-divisi="Semua" onclick="setFilter(null)"><div class="emoji">Semua</div><div class="label">Divisi</div><div class="count">'+allKaryawan+'</div><div class="tasks-total">'+allTotal+' tugas</div></div>';
+  for (const [divisi, c] of Object.entries(counts))
+    html += '<div class="stat-card '+(activeFilter===divisi?'active':'')+'" data-divisi="'+divisi+'" onclick="setFilter(\''+divisi+'\')"><div class="emoji">'+divisi+'</div><div class="label">Karyawan</div><div class="count">'+c.karyawan+'</div><div class="tasks-total">'+c.tasks+' tugas</div></div>';
   container.innerHTML = html;
 }
 
-let filterDivisi = '';
+function setFilter(divisi) {
+  activeFilter = divisi;
+  document.getElementById('taskPanel').classList.remove('open');
+  selectedEmployee = null;
+  renderStats(); renderEmployees();
+}
 
-function renderCards() {
-  const q = document.getElementById('searchInput').value.toLowerCase();
-  const container = document.getElementById('empGrid');
+const tagColors = { "Finance":"tag-finance","Accounting":"tag-accounting","Perpajakan":"tag-perpajakan","Legal & Admin":"tag-legal" };
+
+function renderEmployees() {
+  const grid = document.getElementById('employeeGrid');
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  let employees = getAllEmployees();
+  if (activeFilter) employees = employees.filter(e => e.divisi === activeFilter);
+  if (search) employees = employees.filter(e => e.name.toLowerCase().includes(search));
+  if (employees.length === 0) { grid.innerHTML = '<div class="empty"><div class="emoji">No Data</div><p>Belum ada data. Klik "Tambah" untuk mulai.</p></div>'; return; }
   let html = '';
-  Object.entries(DATA).forEach(([divisi, d]) => {
-    if (filterDivisi && filterDivisi !== divisi) return;
-    d.employees.forEach((emp, ei) => {
-      if (!emp.name.toLowerCase().includes(q)) return;
-      const taskCount = emp.tasks.length;
-      html += `<div class="emp-card" onclick="showTasks('${divisi}', ${ei})" style="--card-color:${d.color}; --card-color2:${d.color2}">
-        <div class="name">${d.emoji} ${emp.name}</div>
-        <div class="divisi">${divisi}</div>
-        <div class="task-count">${taskCount}</div>
-      </div>`;
-    });
+  employees.forEach((emp) => {
+    const isSel = selectedEmployee && selectedEmployee.name === emp.name && selectedEmployee.divisi === emp.divisi;
+    html += '<div class="emp-card" onclick="selectEmployee(\''+emp.divisi+'\',\''+emp.name+'\')"><div class="name">'+emp.name+'</div><div><span class="divisi-tag '+(tagColors[emp.divisi]||'tag-finance')+'">'+emp.divisi+'</span></div><div class="task-count">'+(emp.tasks||[]).length+' tugas</div></div>';
   });
-  if (!html) {
-    html = '<div class="empty"><div class="emoji">🔍</div><p>Tidak ada karyawan ditemukan</p><p style="font-size:0.85rem;margin-top:4px">Coba keyword lain atau tambah data baru</p></div>';
-  }
-  container.innerHTML = html;
+  grid.innerHTML = html;
 }
 
-let selectedDivisi = '', selectedEmpIdx = -1;
-
-function showTasks(divisi, empIdx) {
-  selectedDivisi = divisi;
-  selectedEmpIdx = empIdx;
-  const emp = DATA[divisi].employees[empIdx];
-  const d = DATA[divisi];
+function selectEmployee(divisi, name) {
+  const emp = data.divisions[divisi].find(e => e.name === name);
+  if (!emp) return;
+  selectedEmployee = { ...emp, divisi };
+  renderEmployees();
   const panel = document.getElementById('taskPanel');
-  let html = `<div class="panel-header">
-    <div>
-      <div class="panel-title">${d.emoji} ${emp.name}</div>
-      <div class="panel-subtitle">${divisi}</div>
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn btn-primary btn-sm" style="padding:8px 16px;font-size:0.8rem" onclick="addTask('${divisi}', ${empIdx})">➕ Tambah Tugas</button>
-      <button class="btn btn-warning btn-sm" style="padding:8px 16px;font-size:0.8rem" onclick="editEmp('${divisi}', ${empIdx})">✏️ Edit</button>
-      <button class="btn btn-danger btn-sm" style="padding:8px 16px;font-size:0.8rem" onclick="deleteEmp('${divisi}', ${empIdx})">🗑️ Hapus</button>
-    </div>
-  </div>`;
-  
-  emp.tasks.forEach((task, ti) => {
-    html += `<div class="task-card" style="--card-color:${d.color}">
-      <div class="task-title">📌 ${task.judul}</div>
-      <div class="task-prompt">${task.prompt}</div>
-      ${task.link ? `<a href="${task.link}" target="_blank" class="task-link">🔗 Buka Google Drive</a>` : ''}
-      <div style="margin-top:8px;display:flex;gap:6px">
-        <button class="btn btn-secondary btn-sm" style="padding:4px 12px;font-size:0.75rem" onclick="editTask('${divisi}', ${empIdx}, ${ti})">✏️</button>
-        <button class="btn btn-danger btn-sm" style="padding:4px 12px;font-size:0.75rem" onclick="deleteTask('${divisi}', ${empIdx}, ${ti})">🗑️</button>
-      </div>
-    </div>`;
+  let html = '<div class="emp-header"><div><h3>'+emp.name+'</h3><span class="divisi-tag '+(tagColors[divisi]||'tag-finance')+'">'+divisi+'</span></div><div style="display:flex;gap:8px"><button class="btn btn-add" onclick="openModal(\'add-task\',\''+divisi+'\',\''+name+'\')">+ Tugas</button><button class="btn btn-danger" onclick="deleteEmployee(\''+divisi+'\',\''+name+'\')">Hapus</button><button class="btn" onclick="closePanel()">Tutup</button></div></div>';
+  const tasks = emp.tasks || [];
+  if (tasks.length === 0) html += '<div class="empty"><div class="emoji">Tasks</div><p>Belum ada tugas. Klik "+ Tugas" untuk menambah.</p></div>';
+  else tasks.forEach((task, idx) => {
+    html += '<div class="task-card"><div class="task-title">'+task.title+'</div><div class="task-prompt">'+(task.prompt||'-')+'</div>'+(task.link?'<a href="'+task.link+'" target="_blank" class="task-link">Buka Google Drive</a>':'')+'<div style="margin-top:10px;display:flex;gap:6px"><button class="btn" onclick="openModal(\'edit-task\',\''+divisi+'\',\''+name+'\','+idx+')" style="padding:6px 14px;font-size:0.75rem">Edit</button><button class="btn btn-danger" onclick="deleteTask(\''+divisi+'\',\''+name+'\','+idx+')" style="padding:6px 14px;font-size:0.75rem">Hapus</button></div></div>';
   });
-  
-  if (emp.tasks.length === 0) {
-    html += '<div class="empty"><div class="emoji">📭</div><p>Belum ada tugas</p></div>';
-  }
-  
   panel.innerHTML = html;
-  panel.classList.add('show');
-  
-  // Scroll to panel
-  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  panel.classList.add('open');
 }
 
-function openModal(divisi, empIdx, taskIdx) {
-  document.getElementById('modalOverlay').classList.add('show');
-  document.getElementById('inputNama').value = '';
-  document.getElementById('inputDivisi').value = 'Finance';
-  document.getElementById('inputJudul1').value = '';
-  document.getElementById('inputPrompt1').value = '';
-  document.getElementById('inputLink1').value = '';
-  document.getElementById('inputJudul2').value = '';
-  document.getElementById('inputPrompt2').value = '';
-  document.getElementById('inputLink2').value = '';
-  document.getElementById('editId').value = '';
-  document.getElementById('modalTitle').textContent = '➕ Tambah Karyawan Baru';
-  document.getElementById('modalSubmit').textContent = '✅ Simpan';
-}
+function closePanel() { document.getElementById('taskPanel').classList.remove('open'); selectedEmployee = null; renderEmployees(); }
 
-function editEmp(divisi, empIdx) {
-  const emp = DATA[divisi].employees[empIdx];
-  document.getElementById('modalOverlay').classList.add('show');
-  document.getElementById('inputNama').value = emp.name;
-  document.getElementById('inputDivisi').value = divisi;
-  document.getElementById('inputJudul1').value = emp.tasks[0]?.judul || '';
-  document.getElementById('inputPrompt1').value = emp.tasks[0]?.prompt || '';
-  document.getElementById('inputLink1').value = emp.tasks[0]?.link || '';
-  document.getElementById('inputJudul2').value = emp.tasks[1]?.judul || '';
-  document.getElementById('inputPrompt2').value = emp.tasks[1]?.prompt || '';
-  document.getElementById('inputLink2').value = emp.tasks[1]?.link || '';
-  document.getElementById('editId').value = `${divisi}|${empIdx}`;
-  document.getElementById('modalTitle').textContent = '✏️ Edit Karyawan';
-  document.getElementById('modalSubmit').textContent = '✅ Update';
-}
-
-document.getElementById('modalForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const nama = document.getElementById('inputNama').value.trim();
-  const divisi = document.getElementById('inputDivisi').value;
-  const judul1 = document.getElementById('inputJudul1').value.trim();
-  const prompt1 = document.getElementById('inputPrompt1').value.trim();
-  const link1 = document.getElementById('inputLink1').value.trim();
-  const judul2 = document.getElementById('inputJudul2').value.trim();
-  const prompt2 = document.getElementById('inputPrompt2').value.trim();
-  const link2 = document.getElementById('inputLink2').value.trim();
-  const editId = document.getElementById('editId').value;
-  
-  if (!nama) return showToast('Nama harus diisi', 'error');
-  if (!judul1) return showToast('Minimal 1 tugas harus diisi', 'error');
-  
-  const tasks = [];
-  tasks.push({ judul: judul1, prompt: prompt1, link: link1 });
-  if (judul2) tasks.push({ judul: judul2, prompt: prompt2, link: link2 });
-  
-  if (editId) {
-    const [oldDiv, oldIdx] = editId.split('|');
-    const oldEmp = DATA[oldDiv].employees[parseInt(oldIdx)];
-    if (oldDiv === divisi) {
-      DATA[oldDiv].employees[parseInt(oldIdx)] = { name: nama, tasks };
-    } else {
-      DATA[oldDiv].employees.splice(parseInt(oldIdx), 1);
-      if (!DATA[divisi]) {
-        const emojis = { 'Finance':'💰','Accounting':'📊','Perpajakan':'🧾','Legal & Admin':'⚖️' };
-        const colors = { 'Finance':'#ff6b6b','Accounting':'#ffd93d','Perpajakan':'#6bcb77','Legal & Admin':'#4d96ff' };
-        DATA[divisi] = { emoji: emojis[divisi] || '📋', color: colors[divisi] || '#4d96ff', color2: colors[divisi] || '#4d96ff', employees: [] };
-      }
-      DATA[divisi].employees.push({ name: nama, tasks });
+function openModal(mode, divisi, name, taskIdx) {
+  editingMode = mode;
+  document.getElementById('modalTitle').textContent = mode==='add'?'Tambah Data':mode==='add-task'?'Tambah Tugas':mode==='edit-task'?'Edit Tugas':'Edit Karyawan';
+  document.getElementById('modalDivisi').value = divisi||'Finance';
+  document.getElementById('modalNama').value = name||'';
+  document.getElementById('modalJudul').value = '';
+  document.getElementById('modalPrompt').value = '';
+  document.getElementById('modalLink').value = '';
+  document.getElementById('modalNama').disabled = false;
+  document.getElementById('modalJudul').parentElement.style.display = '';
+  document.getElementById('modalPrompt').parentElement.style.display = '';
+  document.getElementById('modalLink').parentElement.style.display = '';
+  if (mode==='add-task'||mode==='edit-task') {
+    document.getElementById('modalNama').value = name;
+    document.getElementById('modalNama').disabled = true;
+    editingEmployeeIndex = data.divisions[divisi].findIndex(e => e.name === name);
+    if (mode==='edit-task') {
+      const task = data.divisions[divisi][editingEmployeeIndex].tasks[taskIdx];
+      document.getElementById('modalJudul').value = task.title;
+      document.getElementById('modalPrompt').value = task.prompt||'';
+      document.getElementById('modalLink').value = task.link||'';
+      editingTaskIndex = taskIdx;
     }
-    showToast('Karyawan diupdate', 'success');
-  } else {
-    if (!DATA[divisi]) {
-      const emojis = { 'Finance':'💰','Accounting':'📊','Perpajakan':'🧾','Legal & Admin':'⚖️' };
-      const colors = { 'Finance':'#ff6b6b','Accounting':'#ffd93d','Perpajakan':'#6bcb77','Legal & Admin':'#4d96ff' };
-      DATA[divisi] = { emoji: emojis[divisi] || '📋', color: colors[divisi] || '#4d96ff', color2: colors[divisi] || '#4d96ff', employees: [] };
-    }
-    DATA[divisi].employees.push({ name: nama, tasks });
-    showToast('Karyawan ditambahkan', 'success');
+  } else if (mode==='edit-employee') {
+    document.getElementById('modalJudul').parentElement.style.display = 'none';
+    document.getElementById('modalPrompt').parentElement.style.display = 'none';
+    document.getElementById('modalLink').parentElement.style.display = 'none';
+    editingEmployeeIndex = data.divisions[divisi].findIndex(e => e.name === name);
   }
-  
-  closeModal();
-  saveData();
-  renderStats();
-  renderCards();
-  document.getElementById('taskPanel').classList.remove('show');
-});
-
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('show');
+  document.getElementById('modalOverlay').classList.add('open');
 }
 
-function addTask(divisi, empIdx) {
-  const judul = prompt('Judul tugas baru:');
-  if (!judul) return;
-  const promptText = prompt('Deskripsi prompt:');
-  const link = prompt('Link Google Drive (opsional):');
-  DATA[divisi].employees[empIdx].tasks.push({ judul, prompt: promptText || '', link: link || '' });
-  saveData();
-  showTasks(divisi, empIdx);
-  showToast('Tugas ditambahkan', 'success');
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+
+function saveModal() {
+  const divisi = document.getElementById('modalDivisi').value;
+  const nama = document.getElementById('modalNama').value.trim();
+  const judul = document.getElementById('modalJudul').value.trim();
+  const prompt = document.getElementById('modalPrompt').value.trim();
+  const link = document.getElementById('modalLink').value.trim();
+  if (!nama && editingMode!=='edit-task') { showToast('Nama harus diisi', true); return; }
+  if (!data.divisions[divisi]) data.divisions[divisi] = [];
+  if (editingMode==='add') { data.divisions[divisi].push({name:nama,tasks:judul?[{title:judul,prompt,link}]:[]}); showToast('Data ditambahkan'); }
+  else if (editingMode==='add-task') { data.divisions[divisi][editingEmployeeIndex].tasks.push({title:judul,prompt,link}); showToast('Tugas ditambahkan'); }
+  else if (editingMode==='edit-employee') { data.divisions[divisi][editingEmployeeIndex].name = nama; showToast('Nama diperbarui'); }
+  else if (editingMode==='edit-task') { data.divisions[divisi][editingEmployeeIndex].tasks[editingTaskIndex] = {title:judul,prompt,link}; showToast('Tugas diperbarui'); }
+  saveData(); closeModal(); renderStats(); renderEmployees();
+  if (selectedEmployee) selectEmployee(selectedEmployee.divisi, selectedEmployee.name);
 }
 
-function editTask(divisi, empIdx, taskIdx) {
-  const task = DATA[divisi].employees[empIdx].tasks[taskIdx];
-  const judul = prompt('Judul tugas:', task.judul);
-  if (!judul) return;
-  const promptText = prompt('Deskripsi prompt:', task.prompt);
-  const link = prompt('Link Google Drive:', task.link);
-  DATA[divisi].employees[empIdx].tasks[taskIdx] = { judul, prompt: promptText || '', link: link || '' };
-  saveData();
-  showTasks(divisi, empIdx);
-  showToast('Tugas diupdate', 'success');
+function deleteEmployee(divisi, name) {
+  if (!confirm('Hapus '+name+'?')) return;
+  data.divisions[divisi] = data.divisions[divisi].filter(e => e.name !== name);
+  if (data.divisions[divisi].length===0) delete data.divisions[divisi];
+  saveData(); selectedEmployee = null; document.getElementById('taskPanel').classList.remove('open');
+  renderStats(); renderEmployees(); showToast('Data dihapus');
 }
 
-function deleteTask(divisi, empIdx, taskIdx) {
+function deleteTask(divisi, name, taskIdx) {
   if (!confirm('Hapus tugas ini?')) return;
-  DATA[divisi].employees[empIdx].tasks.splice(taskIdx, 1);
-  saveData();
-  showTasks(divisi, empIdx);
-  showToast('Tugas dihapus', 'info');
-}
-
-function deleteEmp(divisi, empIdx) {
-  if (!confirm(`Hapus ${DATA[divisi].employees[empIdx].name}?`)) return;
-  DATA[divisi].employees.splice(empIdx, 1);
-  saveData();
-  document.getElementById('taskPanel').classList.remove('show');
-  showToast('Karyawan dihapus', 'info');
+  data.divisions[divisi].find(e => e.name === name).tasks.splice(taskIdx, 1);
+  saveData(); selectEmployee(divisi, name); renderStats(); showToast('Tugas dihapus');
 }
 
 function exportData() {
-  const blob = new Blob([JSON.stringify(DATA, null, 2)], {type: 'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `prompt-ai-data-${new Date().toISOString().slice(0,10)}.json`;
-  a.click();
-  showToast('Data diexport', 'success');
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'prompt-ai-data.json'; a.click();
+  URL.revokeObjectURL(url); showToast('Data di-download');
 }
 
 function importData(event) {
-  const file = event.target.files[0];
-  if (!file) return;
+  const file = event.target.files[0]; if (!file) return;
   const reader = new FileReader();
   reader.onload = function(e) {
     try {
-      const data = JSON.parse(e.target.result);
-      DATA = data;
-      saveData();
-      document.getElementById('taskPanel').classList.remove('show');
-      showToast('Data diimport!', 'success');
-    } catch (err) {
-      showToast('File JSON tidak valid', 'error');
-    }
+      const imported = JSON.parse(e.target.result);
+      if (!imported.divisions) { showToast('Format file salah', true); return; }
+      data = imported; saveData(); location.reload();
+    } catch(err) { showToast('File tidak valid', true); }
   };
-  reader.readAsText(file);
-  event.target.value = '';
+  reader.readAsText(file); event.target.value = '';
 }
 
-function showToast(msg, type = 'info') {
-  const toast = document.createElement('div');
-  toast.className = `toast ${type}`;
+function showToast(msg, isError) {
+  const toast = document.getElementById('toast');
   toast.textContent = msg;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
+  toast.className = 'toast' + (isError?' error':'');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
 }
 
-// Init
-renderStats();
-renderCards();
+renderStats(); renderEmployees();
+document.addEventListener('keydown', e => { if (e.key==='Escape') closeModal(); });
 </script>
 </body>
 </html>
