@@ -3,447 +3,594 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Task Tracker - Finance Dept</title>
+<title>PROMPT AI — Task Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
-  body{background:#f0f2f5;padding:20px}
-  .header{max-width:1100px;margin:0 auto 24px}
-  .header h1{font-size:24px;color:#1a1a2e}
-  .header p{color:#666;font-size:14px;margin-top:4px}
-  .container{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 360px;gap:20px}
-  @media(max-width:768px){.container{grid-template-columns:1fr;grid-template-rows:auto auto}}
-  
-  /* Stats row */
-  .stats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px;grid-column:1/-1}
-  .stat-card{padding:12px 18px;background:#fff;border-radius:10px;cursor:pointer;border:2px solid transparent;
-    transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.08);flex:1;min-width:120px;text-align:center}
-  .stat-card:hover{border-color:#4361ee;transform:translateY(-1px)}
-  .stat-card.active{border-color:#4361ee;background:#eef0ff}
-  .stat-card .num{font-size:20px;font-weight:700;color:#1a1a2e}
-  .stat-card .label{font-size:12px;color:#888;margin-top:2px}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-  /* Search */
-  .search-box{grid-column:1/-1;margin-bottom:4px}
-  .search-box input{width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;
-    outline:none;transition:.2s}
-  .search-box input:focus{border-color:#4361ee;box-shadow:0 0 0 3px rgba(67,97,238,.12)}
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #f0f2f5;
+  color: #1a1a2e;
+  min-height: 100vh;
+}
 
-  /* Employee list */
-  .employee-list{background:#fff;border-radius:12px;padding:12px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-  .emp-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;
-    border-radius:8px;cursor:pointer;transition:.15s;border-left:3px solid transparent}
-  .emp-item:hover{background:#f5f7ff;border-left-color:#4361ee}
-  .emp-item .name{font-weight:600;color:#1a1a2e;font-size:14px}
-  .emp-item .divisi{font-size:12px;color:#888}
-  .emp-item .count{background:#eef0ff;color:#4361ee;padding:2px 8px;border-radius:6px;font-size:12px;font-weight:600}
+/* HEADER */
+.header {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  padding: 20px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
 
-  /* Task panel */
-  .task-panel{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.06);
-    position:sticky;top:20px;min-height:200px}
-  .task-panel .empty{text-align:center;color:#aaa;padding:40px 0;font-size:14px}
-  .task-panel h3{font-size:16px;color:#1a1a2e;margin-bottom:4px}
-  .task-panel .sub{font-size:12px;color:#888;margin-bottom:14px}
-  .task-card{background:#f8f9ff;border-radius:8px;padding:14px;margin-bottom:10px;border-left:3px solid #4361ee}
-  .task-card .title{font-weight:600;font-size:14px;color:#1a1a2e;margin-bottom:6px}
-  .task-card .prompt{font-size:13px;color:#555;line-height:1.5;margin-bottom:8px}
-  .task-card a{display:inline-flex;align-items:center;gap:4px;color:#4361ee;font-size:13px;
-    text-decoration:none;font-weight:500;padding:4px 0}
-  .task-card a:hover{text-decoration:underline}
-  .badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;margin-right:4px}
-  .badge-pending{background:#fff3e0;color:#e65100}
-  .badge-done{background:#e8f5e9;color:#2e7d32}
-  .badge-progress{background:#e3f2fd;color:#1565c0}
+.header h1 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
 
-  /* Action buttons */
-  .actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;grid-column:1/-1}
-  .btn{padding:8px 16px;border-radius:6px;border:none;font-size:13px;font-weight:500;
-    cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:4px}
-  .btn-primary{background:#4361ee;color:#fff}
-  .btn-primary:hover{background:#3651d4}
-  .btn-outline{background:transparent;border:1px solid #ddd;color:#555}
-  .btn-outline:hover{background:#f5f5f5}
-  .btn-danger{background:#ef5350;color:#fff}
-  .btn-danger:hover{background:#d32f2f}
-  .btn-sm{padding:5px 10px;font-size:12px}
+.header h1 span {
+  color: #e94560;
+}
 
-  /* Modal */
-  .modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);
-    z-index:100;justify-content:center;align-items:center}
-  .modal-overlay.show{display:flex}
-  .modal{background:#fff;border-radius:12px;padding:24px;width:90%;max-width:500px;max-height:80vh;overflow-y:auto}
-  .modal h3{font-size:16px;margin-bottom:14px}
-  .modal label{display:block;font-size:13px;color:#555;margin-bottom:4px;margin-top:10px}
-  .modal label:first-child{margin-top:0}
-  .modal input,.modal select,.modal textarea{width:100%;padding:8px 12px;border:1px solid #ddd;
-    border-radius:6px;font-size:13px;outline:none}
-  .modal input:focus,.modal select:focus,.modal textarea:focus{border-color:#4361ee}
-  .modal textarea{min-height:60px;resize:vertical}
-  .modal .btn-row{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+.header-actions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-add { background: #e94560; color: #fff; margin-right: 8px; }
+.btn-add:hover { background: #d63851; transform: translateY(-1px); }
+.btn-export { background: rgba(255,255,255,0.15); color: #fff; }
+.btn-export:hover { background: rgba(255,255,255,0.25); }
+
+/* CONTAINER */
+.container { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
+
+/* STATS ROW */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px 20px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.stat-card.active { border-color: #e94560; }
+.stat-card h3 { font-size: 13px; font-weight: 600; color: #666; margin-bottom: 4px; }
+.stat-card .num { font-size: 28px; font-weight: 800; color: #1a1a2e; }
+.stat-card .num span { font-size: 13px; font-weight: 500; color: #999; }
+.stat-card .badge { font-size: 11px; color: #e94560; font-weight: 600; }
+
+/* SEARCH */
+.search-bar {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 14px 20px 14px 48px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 15px;
+  font-family: 'Inter', sans-serif;
+  background: #fff;
+  transition: border 0.2s;
+}
+
+.search-bar input:focus { outline: none; border-color: #16213e; }
+.search-bar .icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 18px; color: #999; }
+
+/* EMPLOYEE LIST */
+.employee-section { margin-bottom: 24px; }
+
+.section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  padding-left: 4px;
+}
+
+.employee-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.emp-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px 18px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.emp-card:hover { border-color: #e94560; transform: translateY(-1px); }
+.emp-card.active { border-color: #e94560; background: #fff5f5; }
+
+.emp-avatar {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.emp-info h4 { font-size: 15px; font-weight: 600; }
+.emp-info p { font-size: 12px; color: #999; }
+.emp-info .task-count { font-size: 11px; color: #e94560; font-weight: 600; }
+
+/* EMPTY STATE */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+}
+
+.empty-state h3 { font-size: 18px; margin-bottom: 8px; color: #666; }
+
+/* MODAL */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.show { display: flex; }
+
+.modal {
+  background: #fff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 32px;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal h2 { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
+.modal label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 4px; margin-top: 14px; }
+.modal input, .modal textarea, .modal select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  transition: border 0.2s;
+}
+
+.modal input:focus, .modal textarea:focus, .modal select:focus { outline: none; border-color: #16213e; }
+.modal textarea { resize: vertical; min-height: 70px; }
+.modal .btn-row { display: flex; gap: 10px; margin-top: 24px; }
+.modal .btn-row button { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; font-family: 'Inter', sans-serif; }
+.modal .btn-save { background: #e94560; color: #fff; }
+.modal .btn-save:hover { background: #d63851; }
+.modal .btn-cancel { background: #f0f0f0; color: #666; }
+.modal .btn-cancel:hover { background: #e0e0e0; }
+.modal .btn-danger { background: #fee; color: #e94560; }
+.modal .btn-danger:hover { background: #fdd; }
+
+/* DETAIL PANEL */
+.detail-panel {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  display: none;
+}
+
+.detail-panel.show { display: block; }
+
+.detail-panel .emp-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.detail-panel .emp-header h2 { font-size: 20px; font-weight: 700; }
+.detail-panel .emp-header .badge { font-size: 12px; background: #f0f2f5; padding: 4px 12px; border-radius: 20px; color: #666; }
+
+.task-list { display: flex; flex-direction: column; gap: 10px; }
+.task-card { padding: 14px 18px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #e94560; }
+.task-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.task-card p { font-size: 13px; color: #666; line-height: 1.5; }
+.task-card a { color: #0f3460; font-weight: 600; text-decoration: none; display: inline-block; margin-top: 6px; }
+.task-card a:hover { text-decoration: underline; }
+
+.hidden { display: none; }
+
+@media (max-width: 600px) {
+  .header { padding: 14px 16px; flex-wrap: wrap; gap: 10px; }
+  .header h1 { font-size: 18px; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .employee-grid { grid-template-columns: 1fr; }
+  .emp-card { max-width: 100%; }
+}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <h1>📋 Task Tracker — Finance Dept</h1>
-  <p>Klik karyawan untuk lihat tugasnya</p>
+<header class="header">
+  <h1>PROMPT <span>AI</span></h1>
+  <div class="header-actions">
+    <button class="btn-add" onclick="showModal('employee')">+ Tambah</button>
+    <button class="btn-export" onclick="exportData()">Export</button>
+    <button class="btn-export" onclick="document.getElementById('importInput').click()" style="margin-left:4px;">Import</button>
+    <input type="file" id="importInput" accept=".json" onchange="importData(event)" class="hidden">
+  </div>
+</header>
+
+<div class="container" id="app">
+  <div class="stats" id="statsContainer"></div>
+
+  <div class="search-bar">
+    <span class="icon">🔍</span>
+    <input type="text" id="search" placeholder="Cari karyawan..." oninput="render()">
+  </div>
+
+  <div id="detailPanel" class="detail-panel"></div>
+
+  <div id="employeeContainer"></div>
 </div>
 
-<div class="container">
-  <!-- Stats -->
-  <div class="stats" id="statsRow"></div>
-
-  <!-- Search -->
-  <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Cari nama karyawan..." oninput="render()">
-  </div>
-
-  <!-- Employee list -->
-  <div class="employee-list" id="empList"></div>
-
-  <!-- Task panel -->
-  <div class="task-panel" id="taskPanel">
-    <div class="empty">👆 Klik karyawan untuk lihat tugas</div>
-  </div>
-
-  <!-- Actions -->
-  <div class="actions">
-    <button class="btn btn-primary" onclick="showModal('tambahKaryawan')">➕ Tambah Karyawan</button>
-    <button class="btn btn-outline" onclick="exportData()">⬇️ Export JSON</button>
-    <button class="btn btn-outline" onclick="document.getElementById('importFile').click()">⬆️ Import JSON</button>
-    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
-  </div>
-</div>
-
-<!-- MODALS -->
-<div class="modal-overlay" id="modalTambahKaryawan">
+<!-- MODAL EMPLOYEE -->
+<div class="modal-overlay" id="modalEmployee">
   <div class="modal">
-    <h3>➕ Tambah Karyawan</h3>
+    <h2 id="modalEmpTitle">Tambah Karyawan</h2>
     <label>Nama</label>
-    <input id="mNama" placeholder="Nama karyawan">
+    <input type="text" id="empName" placeholder="Nama karyawan">
     <label>Divisi</label>
-    <select id="mDivisi">
+    <select id="empDivisi">
       <option value="Finance">Finance</option>
       <option value="Accounting">Accounting</option>
       <option value="Perpajakan">Perpajakan</option>
       <option value="Legal & Admin">Legal & Admin</option>
     </select>
     <div class="btn-row">
-      <button class="btn btn-outline" onclick="closeModal('tambahKaryawan')">Batal</button>
-      <button class="btn btn-primary" onclick="tambahKaryawan()">Simpan</button>
+      <button class="btn-save" onclick="saveEmployee()">Simpan</button>
+      <button class="btn-cancel" onclick="closeModal('modalEmployee')">Batal</button>
     </div>
   </div>
 </div>
 
-<div class="modal-overlay" id="modalTambahTugas">
+<!-- MODAL TASK -->
+<div class="modal-overlay" id="modalTask">
   <div class="modal">
-    <h3>➕ Tambah Tugas</h3>
-    <p style="font-size:13px;color:#888" id="tugasFor"></p>
-    <label>Judul Tugas</label>
-    <input id="mJudul" placeholder="Contoh: Laporan Arus Kas Juni">
+    <h2 id="modalTaskTitle">Tambah Tugas</h2>
+    <label>Nama Tugas</label>
+    <input type="text" id="taskName" placeholder="Nama tugas">
     <label>Prompt / Deskripsi</label>
-    <textarea id="mPrompt" placeholder="Jelaskan tugasnya..."></textarea>
+    <textarea id="taskPrompt" placeholder="Deskripsi tugas..."></textarea>
     <label>Link Google Drive</label>
-    <input id="mLink" placeholder="https://drive.google.com/...">
-    <label>Status</label>
-    <select id="mStatus">
-      <option value="Pending">Pending</option>
-      <option value="Progress">In Progress</option>
-      <option value="Done">Done</option>
-    </select>
+    <input type="text" id="taskLink" placeholder="https://drive.google.com/...">
     <div class="btn-row">
-      <button class="btn btn-outline" onclick="closeModal('tambahTugas')">Batal</button>
-      <button class="btn btn-primary" onclick="tambahTugas()">Simpan</button>
+      <button class="btn-save" onclick="saveTask()">Simpan</button>
+      <button class="btn-cancel" onclick="closeModal('modalTask')">Batal</button>
     </div>
   </div>
 </div>
 
-<div class="modal-overlay" id="modalEditTugas">
+<!-- MODAL CONFIRM -->
+<div class="modal-overlay" id="modalConfirm">
   <div class="modal">
-    <h3>✏️ Edit Tugas</h3>
-    <p style="font-size:13px;color:#888" id="editTugasFor"></p>
-    <label>Judul Tugas</label>
-    <input id="eJudul">
-    <label>Prompt / Deskripsi</label>
-    <textarea id="ePrompt"></textarea>
-    <label>Link Google Drive</label>
-    <input id="eLink" placeholder="https://drive.google.com/...">
-    <label>Status</label>
-    <select id="eStatus">
-      <option value="Pending">Pending</option>
-      <option value="Progress">In Progress</option>
-      <option value="Done">Done</option>
-    </select>
+    <h2>Hapus?</h2>
+    <p id="confirmText" style="color:#666;margin-bottom:20px;"></p>
     <div class="btn-row">
-      <button class="btn btn-outline" onclick="closeModal('editTugas')">Batal</button>
-      <button class="btn btn-danger btn-sm" id="hapusBtn" onclick="hapusTugas()">🗑 Hapus</button>
-      <button class="btn btn-primary" onclick="simpanEditTugas()">Simpan</button>
+      <button class="btn-danger" id="confirmBtn" onclick="">Hapus</button>
+      <button class="btn-cancel" onclick="closeModal('modalConfirm')">Batal</button>
     </div>
   </div>
 </div>
 
 <script>
-// ====== DEFAULT DATA ======
-const DEFAULT = {
-  karyawan: {
-    "Rina Amelia": { divisi: "Finance" },
-    "Budi Santoso": { divisi: "Finance" },
-    "Dewi Lestari": { divisi: "Finance" },
-    "Ahmad Fauzi": { divisi: "Perpajakan" },
-    "Siti Nurhaliza": { divisi: "Accounting" },
-    "Rizky Pratama": { divisi: "Accounting" },
-    "Maya Wijaya": { divisi: "Finance" },
-    "Dimas Anggara": { divisi: "Perpajakan" },
-    "Putri Angraini": { divisi: "Legal & Admin" },
-    "Farhan Maulana": { divisi: "Legal & Admin" }
-  },
-  tugas: {
-    "Rina Amelia": [
-      { judul: "Laporan Arus Kas Harian", prompt: "Buat laporan arus kas harian, kirim ke accounting Taiwan jam 9 pagi.", link: "https://drive.google.com/", status: "Progress" },
-      { judul: "Rekonsiliasi Bank", prompt: "Rekonsiliasi bank per 30 Juni. Cocokkan saldo buku besar dengan bank statement.", link: "https://drive.google.com/", status: "Pending" }
-    ],
-    "Budi Santoso": [
-      { judul: "Pengalihan Piutang", prompt: "Buat laporan pengalihan piutang mingguan untuk dikirim ke accounting Taiwan.", link: "https://drive.google.com/", status: "Progress" }
-    ],
-    "Ahmad Fauzi": [
-      { judul: "Laporan Pajak Bulanan", prompt: "Siapkan data PPh 21 dan PPN untuk laporan pajak bulan Juni.", link: "https://drive.google.com/", status: "Pending" },
-      { judul: "Rekap Faktur Pajak", prompt: "Rekap seluruh faktur pajak masuk dan keluar untuk periode Juni 2026.", link: "https://drive.google.com/", status: "Pending" }
-    ],
-    "Dimas Anggara": [
-      { judul: "Input Rupiah", prompt: "Input rupiah ke laporan excel, cek WA dan follow up progress ke pihak eksternal (notaris & konsultan).", link: "https://drive.google.com/", status: "Done" }
-    ]
+let data = { employees: [] };
+let selectedEmpId = null;
+let editingEmpId = null;
+let editingTaskId = null;
+let filterDivisi = null;
+
+const COLORS = ['#e94560','#0f3460','#16213e','#e94560','#533483','#e94560'];
+
+function init() {
+  const saved = localStorage.getItem('prompt_ai_data');
+  if (saved) data = JSON.parse(saved);
+  else {
+    data.employees = [
+      { id: 'e1', name: 'Rina Amelia', divisi: 'Finance', tasks: [
+        { id: 't1', name: 'Laporan Arus Kas', prompt: 'Buat laporan arus kas harian & kirim ke accounting Taiwan', link: 'https://drive.google.com' },
+        { id: 't2', name: 'Input Rupiah', prompt: 'Input transaksi rupiah ke Excel, cek WA, follow up notaris & konsultan', link: 'https://drive.google.com' }
+      ]},
+      { id: 'e2', name: 'Budi Santoso', divisi: 'Finance', tasks: [
+        { id: 't3', name: 'Rekonsiliasi Bank', prompt: 'Cocokkan transaksi bank dengan catatan internal', link: 'https://drive.google.com' }
+      ]},
+      { id: 'e3', name: 'Dewi Lestari', divisi: 'Accounting', tasks: [
+        { id: 't4', name: 'Jurnal Penyesuaian', prompt: 'Buat jurnal penyesuaian akhir bulan', link: 'https://drive.google.com' }
+      ]},
+      { id: 'e4', name: 'Ahmad Fauzi', divisi: 'Perpajakan', tasks: [
+        { id: 't5', name: 'PPh 21', prompt: 'Hitung PPh 21 karyawan untuk bulan ini', link: 'https://drive.google.com' },
+        { id: 't6', name: 'Lapor SPT', prompt: 'Siapkan data SPT Masa PPh Pasal 21', link: 'https://drive.google.com' }
+      ]},
+      { id: 'e5', name: 'Farhan Maulana', divisi: 'Legal & Admin', tasks: [
+        { id: 't7', name: 'Review Kontrak', prompt: 'Review kontrak kerjasama vendor baru', link: 'https://drive.google.com' }
+      ]}
+    ];
+    saveData();
   }
-};
-
-// ====== LOAD / SAVE DATA ======
-let data = loadData();
-
-function loadData() {
-  try {
-    const saved = localStorage.getItem('taskTrackerData');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (parsed && parsed.karyawan && parsed.tugas) return parsed;
-    }
-  } catch(e) {}
-  return JSON.parse(JSON.stringify(DEFAULT));
+  render();
 }
 
 function saveData() {
-  localStorage.setItem('taskTrackerData', JSON.stringify(data));
+  localStorage.setItem('prompt_ai_data', JSON.stringify(data));
 }
-
-// ====== RENDER ======
-let selectedKaryawan = null;
-let filterDivisi = null;
 
 function render() {
-  const search = document.getElementById('searchInput').value.toLowerCase();
-  const list = document.getElementById('empList');
-  const statsRow = document.getElementById('statsRow');
+  renderStats();
+  renderEmployees();
+  renderDetail();
+}
 
-  // Count stats
-  const divisiList = ['Finance','Accounting','Perpajakan','Legal & Admin'];
-  const counts = {};
-  divisiList.forEach(d => counts[d] = 0);
-  Object.keys(data.karyawan).forEach(n => {
-    const d = data.karyawan[n].divisi;
-    if (counts[d] !== undefined) counts[d]++;
-  });
-
-  // Stats HTML
-  let statsHtml = '';
-  const icons = {'Finance':'💰','Accounting':'📊','Perpajakan':'🧾','Legal & Admin':'⚖️'};
-  statsHtml += `<div class="stat-card ${!filterDivisi?'active':''}" onclick="filterDivisi=null;render()">
-    <div class="num">${Object.keys(data.karyawan).length}</div>
-    <div class="label">👥 Semua</div>
-  </div>`;
-  divisiList.forEach(d => {
-    const active = filterDivisi === d ? 'active' : '';
-    statsHtml += `<div class="stat-card ${active}" onclick="filterDivisi='${d}';render()">
-      <div class="num">${counts[d]||0}</div>
-      <div class="label">${icons[d]} ${d}</div>
+function renderStats() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const divisiList = [...new Set(data.employees
+    .filter(e => e.name.toLowerCase().includes(q))
+    .map(e => e.divisi)
+  )];
+  
+  const container = document.getElementById('statsContainer');
+  container.innerHTML = `<div class="stat-card ${!filterDivisi ? 'active' : ''}" onclick="filterDivisi=null;render();">
+    <h3>Total</h3>
+    <div class="num">${data.employees.reduce((s,e)=>s+e.tasks.length,0)} <span>tugas</span></div>
+    <div class="badge">${data.employees.length} karyawan</div>
+  </div>` + divisiList.map(d => {
+    const emp = data.employees.filter(e => e.divisi === d);
+    const tasks = emp.reduce((s,e)=>s+e.tasks.length,0);
+    const icons = {'Finance':'💰','Accounting':'📊','Perpajakan':'🧾','Legal & Admin':'⚖️'};
+    return `<div class="stat-card ${filterDivisi===d?'active':''}" onclick="filterDivisi='${d}';render();">
+      <h3>${icons[d] || '📁'} ${d}</h3>
+      <div class="num">${tasks} <span>tugas</span></div>
+      <div class="badge">${emp.length} orang</div>
     </div>`;
+  }).join('');
+}
+
+function renderEmployees() {
+  const q = document.getElementById('search').value.toLowerCase();
+  let list = data.employees.filter(e => e.name.toLowerCase().includes(q));
+  if (filterDivisi) list = list.filter(e => e.divisi === filterDivisi);
+  
+  const groups = {};
+  list.forEach(e => {
+    if (!groups[e.divisi]) groups[e.divisi] = [];
+    groups[e.divisi].push(e);
   });
-  statsRow.innerHTML = statsHtml;
-
-  // Filter & search
-  let names = Object.keys(data.karyawan);
-  if (filterDivisi) names = names.filter(n => data.karyawan[n].divisi === filterDivisi);
-  if (search) names = names.filter(n => n.toLowerCase().includes(search));
-
-  // Employee list HTML
-  if (names.length === 0) {
-    list.innerHTML = '<div style="text-align:center;padding:30px;color:#aaa">Tidak ada karyawan</div>';
-  } else {
-    let html = '';
-    names.forEach(n => {
-      const d = data.karyawan[n].divisi;
-      const t = data.tugas[n] || [];
-      const active = selectedKaryawan === n ? 'style="background:#eef0ff;border-left-color:#4361ee"' : '';
-      html += `<div class="emp-item" ${active} onclick="pilihKaryawan('${n}')">
-        <div><div class="name">${n}</div><div class="divisi">${d}</div></div>
-        <div class="count">${t.length} tugas</div>
+  
+  const container = document.getElementById('employeeContainer');
+  let html = '';
+  
+  for (const [divisi, emps] of Object.entries(groups)) {
+    html += `<div class="employee-section"><div class="section-title">${divisi}</div><div class="employee-grid">`;
+    emps.forEach(e => {
+      const c = COLORS[e.name.length % COLORS.length];
+      const active = selectedEmpId === e.id ? 'active' : '';
+      html += `<div class="emp-card ${active}" onclick="selectEmp('${e.id}')">
+        <div class="emp-avatar" style="background:${c}">${e.name.charAt(0)}</div>
+        <div class="emp-info">
+          <h4>${e.name}</h4>
+          <div class="task-count">${e.tasks.length} tugas</div>
+        </div>
       </div>`;
     });
-    list.innerHTML = html;
+    html += `</div></div>`;
   }
-
-  // Task panel
-  if (selectedKaryawan && data.karyawan[selectedKaryawan]) {
-    renderTasks(selectedKaryawan);
-  } else {
-    document.getElementById('taskPanel').innerHTML = '<div class="empty">👆 Klik karyawan untuk lihat tugas</div>';
+  
+  if (!list.length) {
+    html = `<div class="empty-state"><h3>Tidak ada karyawan</h3><p>Klik "Tambah" untuk menambahkan</p></div>`;
   }
+  
+  container.innerHTML = html;
 }
 
-function pilihKaryawan(n) {
-  selectedKaryawan = n;
+function selectEmp(id) {
+  selectedEmpId = selectedEmpId === id ? null : id;
   render();
 }
 
-function renderTasks(n) {
-  const panel = document.getElementById('taskPanel');
-  const d = data.karyawan[n];
-  const t = data.tugas[n] || [];
-
-  let html = `<div style="display:flex;justify-content:space-between;align-items:start">
-    <div><h3>${n}</h3><div class="sub">${d.divisi} · ${t.length} tugas</div></div>
-    <button class="btn btn-primary btn-sm" onclick="showModalTambahTugas('${n}')">➕ Tugas</button>
+function renderDetail() {
+  const panel = document.getElementById('detailPanel');
+  if (!selectedEmpId) { panel.classList.remove('show'); return; }
+  
+  const emp = data.employees.find(e => e.id === selectedEmpId);
+  if (!emp) { panel.classList.remove('show'); return; }
+  
+  panel.classList.add('show');
+  const c = COLORS[emp.name.length % COLORS.length];
+  const icons = {'Finance':'💰','Accounting':'📊','Perpajakan':'🧾','Legal & Admin':'⚖️'};
+  
+  panel.innerHTML = `<div class="emp-header">
+    <div class="emp-avatar" style="width:48px;height:48px;border-radius:12px;background:${c};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;">${emp.name.charAt(0)}</div>
+    <div><h2>${emp.name}</h2><span class="badge">${icons[emp.divisi]||'📁'} ${emp.divisi}</span></div>
+    <div style="margin-left:auto;display:flex;gap:6px;">
+      <button class="btn-add" style="padding:8px 14px;font-size:12px;" onclick="showModal('task','${emp.id}')">+ Tugas</button>
+      <button class="btn-export" style="padding:8px 14px;font-size:12px;background:#f0f0f0;color:#666;" onclick="showModal('employee','${emp.id}')">✏️</button>
+      <button class="btn-export" style="padding:8px 14px;font-size:12px;background:#fee;color:#e94560;" onclick="confirmDelete('employee','${emp.id}')">🗑️</button>
+    </div>
   </div>`;
-
-  if (t.length === 0) {
-    html += '<div style="text-align:center;padding:20px;color:#aaa">Belum ada tugas</div>';
-  } else {
-    t.forEach((task, idx) => {
-      const badgeClass = task.status === 'Done' ? 'badge-done' : task.status === 'Progress' ? 'badge-progress' : 'badge-pending';
-      html += `<div class="task-card" onclick="showModalEditTugas('${n}',${idx})" style="cursor:pointer">
-        <div class="title">${task.judul} <span class="badge ${badgeClass}">${task.status}</span></div>
-        <div class="prompt">${task.prompt}</div>
-        ${task.link ? `<a href="${task.link}" target="_blank" onclick="event.stopPropagation()">🔗 Buka Google Drive</a>` : ''}
-      </div>`;
-    });
+  
+  if (!emp.tasks.length) {
+    panel.innerHTML += `<div style="text-align:center;padding:30px;color:#999;">Belum ada tugas. Klik "+ Tugas" untuk menambahkan.</div>`;
+    return;
   }
-  panel.innerHTML = html;
+  
+  panel.innerHTML += `<div class="task-list">${emp.tasks.map(t => `<div class="task-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <h4>📌 ${t.name}</h4>
+      <div style="display:flex;gap:4px;">
+        <span style="cursor:pointer;font-size:12px;color:#999;" onclick="showModal('task','${emp.id}','${t.id}')">✏️</span>
+        <span style="cursor:pointer;font-size:12px;color:#e94560;" onclick="confirmDelete('task','${emp.id}','${t.id}')">🗑️</span>
+      </div>
+    </div>
+    <p>${t.prompt}</p>
+    ${t.link ? `<a href="${t.link}" target="_blank">🔗 Buka Dokumen →</a>` : ''}
+  </div>`).join('')}</div>`;
 }
 
-// ====== MODALS ======
-function showModal(id) {
-  document.getElementById('modal' + capitalize(id)).classList.add('show');
+/* MODAL EMPLOYEE */
+function showModal(type, empId, taskId) {
+  if (type === 'employee') {
+    document.getElementById('modalEmpTitle').textContent = empId ? 'Edit Karyawan' : 'Tambah Karyawan';
+    const emp = empId ? data.employees.find(e => e.id === empId) : null;
+    document.getElementById('empName').value = emp ? emp.name : '';
+    document.getElementById('empDivisi').value = emp ? emp.divisi : 'Finance';
+    editingEmpId = empId || null;
+    document.getElementById('modalEmployee').classList.add('show');
+  } else {
+    document.getElementById('modalTaskTitle').textContent = taskId ? 'Edit Tugas' : 'Tambah Tugas';
+    const emp = data.employees.find(e => e.id === empId);
+    const task = taskId ? emp?.tasks.find(t => t.id === taskId) : null;
+    document.getElementById('taskName').value = task ? task.name : '';
+    document.getElementById('taskPrompt').value = task ? task.prompt : '';
+    document.getElementById('taskLink').value = task ? task.link : '';
+    editingTaskId = taskId || null;
+    document.getElementById('modalTask').dataset.empId = empId;
+    document.getElementById('modalTask').classList.add('show');
+  }
 }
+
 function closeModal(id) {
-  document.getElementById('modal' + capitalize(id)).classList.remove('show');
-}
-function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
-
-// Tambah Karyawan
-function tambahKaryawan() {
-  const nama = document.getElementById('mNama').value.trim();
-  const divisi = document.getElementById('mDivisi').value;
-  if (!nama) return alert('Nama harus diisi');
-  if (data.karyawan[nama]) return alert('Karyawan sudah ada');
-  data.karyawan[nama] = { divisi };
-  data.tugas[nama] = [];
-  saveData();
-  document.getElementById('mNama').value = '';
-  closeModal('tambahKaryawan');
-  render();
+  document.getElementById(id).classList.remove('show');
 }
 
-// Tambah Tugas
-let tugasKaryawan = null;
-function showModalTambahTugas(n) {
-  tugasKaryawan = n;
-  document.getElementById('tugasFor').textContent = 'Untuk: ' + n;
-  document.getElementById('mJudul').value = '';
-  document.getElementById('mPrompt').value = '';
-  document.getElementById('mLink').value = '';
-  document.getElementById('mStatus').value = 'Pending';
-  showModal('tambahTugas');
-}
-function tambahTugas() {
-  const judul = document.getElementById('mJudul').value.trim();
-  const prompt = document.getElementById('mPrompt').value.trim();
-  const link = document.getElementById('mLink').value.trim();
-  const status = document.getElementById('mStatus').value;
-  if (!judul) return alert('Judul tugas harus diisi');
-  if (!data.tugas[tugasKaryawan]) data.tugas[tugasKaryawan] = [];
-  data.tugas[tugasKaryawan].push({ judul, prompt, link, status });
-  saveData();
-  closeModal('tambahTugas');
-  renderTasks(tugasKaryawan);
+function saveEmployee() {
+  const name = document.getElementById('empName').value.trim();
+  const divisi = document.getElementById('empDivisi').value;
+  if (!name) return alert('Nama harus diisi');
+  
+  if (editingEmpId) {
+    const emp = data.employees.find(e => e.id === editingEmpId);
+    emp.name = name;
+    emp.divisi = divisi;
+  } else {
+    data.employees.push({ id: 'e' + Date.now(), name, divisi, tasks: [] });
+  }
+  
+  saveData(); render();
+  closeModal('modalEmployee');
+  editingEmpId = null;
 }
 
-// Edit Tugas
-let editKaryawan = null, editIdx = null;
-function showModalEditTugas(n, idx) {
-  editKaryawan = n;
-  editIdx = idx;
-  const task = data.tugas[n][idx];
-  document.getElementById('editTugasFor').textContent = n + ' — ' + task.judul;
-  document.getElementById('eJudul').value = task.judul;
-  document.getElementById('ePrompt').value = task.prompt || '';
-  document.getElementById('eLink').value = task.link || '';
-  document.getElementById('eStatus').value = task.status;
-  document.getElementById('hapusBtn').style.display = 'inline-flex';
-  showModal('editTugas');
-}
-function simpanEditTugas() {
-  const judul = document.getElementById('eJudul').value.trim();
-  const prompt = document.getElementById('ePrompt').value.trim();
-  const link = document.getElementById('eLink').value.trim();
-  const status = document.getElementById('eStatus').value;
-  if (!judul) return alert('Judul harus diisi');
-  data.tugas[editKaryawan][editIdx] = { judul, prompt, link, status };
-  saveData();
-  closeModal('editTugas');
-  renderTasks(editKaryawan);
-}
-function hapusTugas() {
-  if (!confirm('Hapus tugas ini?')) return;
-  data.tugas[editKaryawan].splice(editIdx, 1);
-  saveData();
-  closeModal('editTugas');
-  renderTasks(editKaryawan);
+function saveTask() {
+  const name = document.getElementById('taskName').value.trim();
+  const prompt = document.getElementById('taskPrompt').value.trim();
+  const link = document.getElementById('taskLink').value.trim();
+  const empId = document.getElementById('modalTask').dataset.empId;
+  if (!name) return alert('Nama tugas harus diisi');
+  
+  const emp = data.employees.find(e => e.id === empId);
+  if (!emp) return;
+  
+  if (editingTaskId) {
+    const task = emp.tasks.find(t => t.id === editingTaskId);
+    task.name = name;
+    task.prompt = prompt;
+    task.link = link;
+  } else {
+    emp.tasks.push({ id: 't' + Date.now(), name, prompt, link });
+  }
+  
+  saveData(); render();
+  closeModal('modalTask');
+  editingTaskId = null;
 }
 
-// ====== EXPORT / IMPORT ======
+function confirmDelete(type, empId, taskId) {
+  const emp = data.employees.find(e => e.id === empId);
+  document.getElementById('confirmText').textContent = type === 'employee'
+    ? `Hapus ${emp?.name} dan semua tugasnya?`
+    : `Hapus tugas "${emp?.tasks.find(t=>t.id===taskId)?.name}"?`;
+  
+  document.getElementById('confirmBtn').onclick = () => {
+    if (type === 'employee') {
+      data.employees = data.employees.filter(e => e.id !== empId);
+      if (selectedEmpId === empId) selectedEmpId = null;
+    } else {
+      const e = data.employees.find(em => em.id === empId);
+      if (e) { e.tasks = e.tasks.filter(t => t.id !== taskId); }
+    }
+    saveData(); render();
+    closeModal('modalConfirm');
+  };
+  document.getElementById('modalConfirm').classList.add('show');
+}
+
 function exportData() {
-  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'task_tracker_data.json';
+  a.download = 'prompt_ai_data.json';
   a.click();
 }
+
 function importData(e) {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = function(ev) {
+  reader.onload = (ev) => {
     try {
-      const imported = JSON.parse(ev.target.result);
-      if (imported.karyawan && imported.tugas) {
-        data = imported;
-        saveData();
-        render();
-        alert('Data berhasil diimport!');
-      } else {
-        alert('Format file tidak valid');
-      }
-    } catch(e) { alert('File rusak atau bukan JSON'); }
+      data = JSON.parse(ev.target.result);
+      saveData(); render();
+      alert('Data berhasil diimport!');
+    } catch(err) {
+      alert('File tidak valid');
+    }
   };
   reader.readAsText(file);
   e.target.value = '';
 }
 
-// Close modal on overlay click
-document.querySelectorAll('.modal-overlay').forEach(el => {
-  el.addEventListener('click', function(e) {
-    if (e.target === this) this.classList.remove('show');
-  });
-});
-
-// Init
-render();
+init();
 </script>
 </body>
 </html>
