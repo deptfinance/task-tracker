@@ -66,6 +66,22 @@ body {
   margin: 16px 0 24px;
 }
 
+/* ── LOADING ── */
+.loading-wrap {
+  text-align: center;
+  padding: 60px 20px;
+  color: #7a8899;
+}
+.spinner {
+  width: 36px; height: 36px;
+  border: 3px solid #e0e4ec;
+  border-top-color: #6c63ff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
 /* ── TOOLBAR ── */
 .toolbar {
   display: flex;
@@ -405,7 +421,7 @@ body {
 <div class="header">
   <h1>PROMPT AI</h1>
   <p>Task Management — Kelola Tugas & Prompt Karyawan</p>
-  <div class="badge" id="headerCount">0 Karyawan · 0 Divisi</div>
+  <div class="badge" id="headerCount">Memuat data...</div>
 </div>
 <div class="divider"></div>
 
@@ -420,8 +436,12 @@ body {
   <span class="total-count" id="totalCount"></span>
 </div>
 
-<div class="stats" id="statsContainer"></div>
-<div class="employee-grid" id="empGrid"></div>
+<div id="loadingWrap" class="loading-wrap">
+  <div class="spinner"></div>
+  <div>Memuat data dari Airtable...</div>
+</div>
+<div class="stats" id="statsContainer" style="display:none"></div>
+<div class="employee-grid" id="empGrid" style="display:none"></div>
 <div class="task-panel" id="taskPanel"></div>
 </div>
 
@@ -439,7 +459,7 @@ body {
       <option value="Legal & Admin">⚖️ Legal & Admin</option>
     </select>
     <label>Warna Avatar</label>
-    <input id="fColor" type="color" value="#58a6ff">
+    <input id="fColor" type="color" value="#6c63ff">
     <hr style="border:none;border-top:1.5px solid #e0e4ec;margin:16px 0">
     <h4 style="color:#4a5568;font-size:0.9rem;margin-bottom:8px">Tugas</h4>
     <div id="taskFields">
@@ -458,6 +478,23 @@ body {
 </div>
 
 <script>
+// ===== AIRTABLE CONFIG =====
+const AIRTABLE_TOKEN="patq...onst AIRTABLE_BASE = "appEw0z34X7M6i8I4";
+const AIRTABLE_TABLE = "Karyawan";
+const AIRTABLE_URL = `https://api.airtable.com/v0/${AIRTABLE_BASE}/${AIRTABLE_TABLE}`;
+
+function airFetch(method, body) {
+  return fetch(AIRTABLE_URL + (method==='GET'?'':'?typecast=true'), {
+    method, headers: {
+      'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
+      'Content-Type': 'application/json'
+    }, body: body ? JSON.stringify(body) : undefined
+  }).then(r => r.json());
+}
+
+let data = [];
+let loading = true;
+
 let editingIndex = -1;
 let taskCounter = 1;
 
@@ -468,63 +505,45 @@ const DEPT_ICONS = {
   'Finance':'💰','Accounting':'📊','Perpajakan':'🧾','Legal & Admin':'⚖️','Lainnya':'📋'
 };
 
-let data = JSON.parse(localStorage.getItem('promptAI_data')) || [
-  {name:'Rina Amelia',dept:'Finance',color:'#e53e3e',tasks:[{title:'Laporan Arus Kas Harian',prompt:'Buat laporan arus kas harian dalam format Excel, pisahkan pemasukan dan pengeluaran per transaksi.',link:'https://drive.google.com'}]},
-  {name:'Budi Santoso',dept:'Finance',color:'#e53e3e',tasks:[{title:'Rekonsiliasi Bank',prompt:'Cocokkan transaksi bank dengan catatan internal, tandai perbedaan.',link:'https://drive.google.com'}]},
-  {name:'Dewi Lestari',dept:'Finance',color:'#e53e3e',tasks:[{title:'Monitoring Budget Dept',prompt:'Buat dashboard monitoring anggaran per divisi, bandingkan realisasi vs anggaran.',link:'https://drive.google.com'}]},
-  {name:'Ahmad Fauzi',dept:'Finance',color:'#e53e3e',tasks:[{title:'Laporan Pajak Bulanan',prompt:'Siapkan data PPN & PPh 21 untuk pelaporan bulan ini, lampirkan bukti potong.',link:'https://drive.google.com'}]},
-  {name:'Siti Nurhaliza',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Jurnal Penutup Bulanan',prompt:'Buat jurnal penutup akhir bulan, termasuk penyesuaian aset dan beban.',link:'https://drive.google.com'}]},
-  {name:'Rizky Pratama',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Neraca Saldo',prompt:'Susun neraca saldo per 30 Juni, pastikan balance.',link:'https://drive.google.com'}]},
-  {name:'Maya Wijaya',dept:'Perpajakan',color:'#38a169',tasks:[{title:'Perhitungan PPh 21',prompt:'Hitung PPh 21 seluruh karyawan, gunakan tarif Pasal 17 terbaru.',link:'https://drive.google.com'}]},
-  {name:'Dimas Anggara',dept:'Perpajakan',color:'#38a169',tasks:[{title:'SPT Masa PPN',prompt:'Isi dan laporkan SPT Masa PPN masa pajak Juni, lampirkan faktur pajak.',link:'https://drive.google.com'}]},
-  {name:'Putri Angraini',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Laporan Laba Rugi',prompt:'Buat laporan laba rugi bulan Juni dengan breakdown per divisi.',link:'https://drive.google.com'}]},
-  {name:'Farhan Maulana',dept:'Legal & Admin',color:'#3182ce',tasks:[{title:'Review Kontrak Vendor',prompt:'Review kontrak vendor IT support, perhatikan klausul pembayaran dan jangka waktu.',link:'https://drive.google.com'}]},
-  {name:'Lisa Andriani',dept:'Legal & Admin',color:'#3182ce',tasks:[{title:'Pengurusan NIB & Legalitas',prompt:'Siapkan dokumen pengurusan NIB perusahaan baru, cek kelengkapan.',link:'https://drive.google.com'}]},
-  {name:'Ani Rahma',dept:'Finance',color:'#e53e3e',tasks:[{title:'Input Data Transaksi',prompt:'Input semua transaksi harian ke sistem akuntansi, pastikan sesuai bukti.',link:'https://drive.google.com'}]},
-  {name:'Bambang S.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Rekap Piutang',prompt:'Buat rekap piutang per pelanggan, kelompokkan berdasarkan umur piutang.',link:'https://drive.google.com'}]},
-  {name:'Cindy K.',dept:'Perpajakan',color:'#38a169',tasks:[{title:'Dokumen Tax Amnesty',prompt:'Siapkan dokumen pendukung untuk program pengungkapan sukarela.',link:'https://drive.google.com'}]},
-  {name:'Denny A.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Cash Flow Projection',prompt:'Buat proyeksi arus kas 3 bulan ke depan berdasarkan data historis.',link:'https://drive.google.com'}]},
-  {name:'Eka Putri',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Depresiasi Aset',prompt:'Hitung dan catat depresiasi aset tetap bulan ini.',link:'https://drive.google.com'}]},
-  {name:'Fajar H.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Budget vs Actual',prompt:'Bandingkan realisasi anggaran bulan ini dengan budget, analisis selisih.',link:'https://drive.google.com'}]},
-  {name:'Gita P.',dept:'Legal & Admin',color:'#3182ce',tasks:[{title:'Dokumen RUPS',prompt:'Siapkan notulen dan dokumen RUPS tahunan.',link:'https://drive.google.com'}]},
-  {name:'Hendra G.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Stock Opname',prompt:'Lakukan stock opname akhir bulan, cocokkan fisik dengan catatan.',link:'https://drive.google.com'}]},
-  {name:'Intan Sari',dept:'Perpajakan',color:'#38a169',tasks:[{title:'Konsolidasi Pajak',prompt:'Konsolidasi data perpajakan seluruh entitas anak perusahaan.',link:'https://drive.google.com'}]},
-  {name:'Joko W.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Analisis Biaya',prompt:'Analisis biaya operasional bulan ini, identifikasi area penghematan.',link:'https://drive.google.com'}]},
-  {name:'Karin A.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Jurnal Koreksi',prompt:'Buat jurnal koreksi atas kesalahan pencatatan bulan sebelumnya.',link:'https://drive.google.com'}]},
-  {name:'Lutfi M.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Rekap Bank Garansi',prompt:'Rekap seluruh bank garansi yang masih berlaku, catat jatuh tempo.',link:'https://drive.google.com'}]},
-  {name:'Mila R.',dept:'Perpajakan',color:'#38a169',tasks:[{title:'e-Faktur',prompt:'Upload dan laporkan e-Faktur PPN masa ini, pastikan approval.',link:'https://drive.google.com'}]},
-  {name:'Nadia F.',dept:'Legal & Admin',color:'#3182ce',tasks:[{title:'Arsip Kontrak',prompt:'Digitalisasi dan arsipkan seluruh kontrak vendor per divisi.',link:'https://drive.google.com'}]},
-  {name:'Oscar T.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Laporan Keuangan Bulanan',prompt:'Susun laporan keuangan bulanan: neraca, laba rugi, arus kas.',link:'https://drive.google.com'}]},
-  {name:'Putra D.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Akun Hutang',prompt:'Rekap hutang usaha per supplier, kelompokkan berdasarkan jatuh tempo.',link:'https://drive.google.com'}]},
-  {name:'Queen A.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Forecasting Revenue',prompt:'Buat forecasting pendapatan untuk Q3 2026 berdasarkan data Q1-Q2.',link:'https://drive.google.com'}]},
-  {name:'Rendi K.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Buku Besar',prompt:'Cetak dan review buku besar semua akun untuk audit internal.',link:'https://drive.google.com'}]},
-  {name:'Sasa P.',dept:'Perpajakan',color:'#38a169',tasks:[{title:'PPh Final',prompt:'Hitung PPh Final untuk transaksi sewa dan jasa konstruksi.',link:'https://drive.google.com'}]},
-  {name:'Tomi S.',dept:'Legal & Admin',color:'#3182ce',tasks:[{title:'Pengurusan IMTA',prompt:'Siapkan dokumen pengurusan IMTA untuk tenaga kerja asing baru.',link:'https://drive.google.com'}]},
-  {name:'Umar H.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Audit Internal',prompt:'Siapkan data untuk audit internal, rekap dokumen pendukung.',link:'https://drive.google.com'}]},
-  {name:'Vina G.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Konsolidasi Laporan',prompt:'Konsolidasi laporan keuangan seluruh entitas untuk laporan gabungan.',link:'https://drive.google.com'}]},
-  {name:'Wawan S.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Rekap Biaya Proyek',prompt:'Rekap seluruh biaya proyek, pisahkan modal dan operasional.',link:'https://drive.google.com'}]},
-  {name:'Xena M.',dept:'Perpajakan',color:'#38a169',tasks:[{title:'Dokumen Transfer Pricing',prompt:'Siapkan dokumen transfer pricing untuk pelaporan tahunan.',link:'https://drive.google.com'}]},
-  {name:'Yoga P.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Rekonsiliasi Piutang',prompt:'Rekonsiliasi piutang usaha dengan aging schedule.',link:'https://drive.google.com'}]},
-  {name:'Zara N.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Laporan Realisasi Anggaran',prompt:'Buat laporan realisasi anggaran per departemen.',link:'https://drive.google.com'}]},
-  {name:'Adi P.',dept:'Legal & Admin',color:'#3182ce',tasks:[{title:'Draft Perjanjian',prompt:'Buat draft perjanjian kerjasama dengan vendor baru.',link:'https://drive.google.com'}]},
-  {name:'Bella C.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Jurnal Pembelian',prompt:'Posting jurnal pembelian bulan ini, pastikan sesuai PO.',link:'https://drive.google.com'}]},
-  {name:'Cakra D.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Analisis Rasio',prompt:'Hitung rasio keuangan: likuiditas, solvabilitas, profitabilitas.',link:'https://drive.google.com'}]},
-  {name:'Dewi S.',dept:'Perpajakan',color:'#38a169',tasks:[{title:'SPT Tahunan Badan',prompt:'Siapkan data dan hitung PPh Badan tahun pajak 2025.',link:'https://drive.google.com'}]},
-  {name:'Elang J.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Monitoring Investasi',prompt:'Buat laporan monitoring investasi jangka pendek dan return-nya.',link:'https://drive.google.com'}]},
-  {name:'Fitri A.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Catatan Atas Laporan',prompt:'Buat catatan atas laporan keuangan (CALK) bulanan.',link:'https://drive.google.com'}]},
-  {name:'Gilang R.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Rekap Biaya Marketing',prompt:'Rekap biaya marketing bulan ini, bandingkan dengan budget.',link:'https://drive.google.com'}]},
-  {name:'Hana K.',dept:'Legal & Admin',color:'#3182ce',tasks:[{title:'Legal Opinion',prompt:'Buat legal opinion terkait kerjasama joint venture.',link:'https://drive.google.com'}]},
-  {name:'Iqbal M.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Audit Trail',prompt:'Siapkan audit trail untuk transaksi keuangan bulan ini.',link:'https://drive.google.com'}]},
-  {name:'Julia R.',dept:'Perpajakan',color:'#38a169',tasks:[{title:'Tax Planning',prompt:'Buat tax planning untuk optimalisasi beban pajak tahun depan.',link:'https://drive.google.com'}]},
-  {name:'Kevin H.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Working Capital',prompt:'Analisis working capital dan identifikasi area perbaikan.',link:'https://drive.google.com'}]},
-  {name:'Laras N.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Laporan Segmentasi',prompt:'Buat laporan keuangan segmentasi per divisi bisnis.',link:'https://drive.google.com'}]},
-  {name:'Maulana R.',dept:'Finance',color:'#e53e3e',tasks:[{title:'AR Collection',prompt:'Follow up penagihan piutang jatuh tempo, buat laporan aging.',link:'https://drive.google.com'}]}
-];
+// ===== LOAD FROM AIRTABLE =====
+async function loadData() {
+  loading = true;
+  document.getElementById('loadingWrap').style.display = 'block';
+  document.getElementById('statsContainer').style.display = 'none';
+  document.getElementById('empGrid').style.display = 'none';
 
-function saveData() {
-  localStorage.setItem('promptAI_data', JSON.stringify(data));
+  try {
+    let result = await airFetch('GET');
+    let records = result.records || [];
+    data = records.map(r => ({
+      id: r.id,
+      name: r.fields.Nama || '',
+      dept: r.fields.Divisi || 'Lainnya',
+      color: r.fields.Warna || '#6c63ff',
+      tasks: parseTasks(r.fields.Tugas)
+    }));
+  } catch(e) {
+    console.error('Airtable load error:', e);
+    data = [];
+  }
+
+  loading = false;
+  document.getElementById('loadingWrap').style.display = 'none';
+  document.getElementById('statsContainer').style.display = 'grid';
+  document.getElementById('empGrid').style.display = 'grid';
+  render();
 }
 
+function parseTasks(tugasField) {
+  if (!tugasField) return [{title:'Belum ada tugas', prompt:'', link:''}];
+  try {
+    return JSON.parse(tugasField);
+  } catch(e) {
+    return [{title: tugasField.slice(0,50), prompt: tugasField, link:''}];
+  }
+}
+
+// ===== RENDER =====
 function getDepts() {
   const d = {};
   data.forEach(e => { if(!d[e.dept]) d[e.dept] = []; d[e.dept].push(e); });
@@ -534,7 +553,6 @@ function getDepts() {
 function render() {
   renderStats();
   renderEmployees();
-  updateCount();
 }
 
 function renderStats() {
@@ -578,9 +596,9 @@ function renderEmployees() {
   const container = document.getElementById('empGrid');
   let html = '';
   list.forEach((e, i) => {
-    const idx = data.indexOf(e);
     const initials = e.name.split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase();
-    html += `<div class="emp-card" onclick="showTasks(${idx})">
+    const realIdx = data.indexOf(e);
+    html += `<div class="emp-card" onclick="showTasks(${realIdx})">
       <div class="avatar" style="background:${e.color}">${initials}</div>
       <div class="info">
         <div class="name">${e.name}</div>
@@ -590,7 +608,6 @@ function renderEmployees() {
     </div>`;
   });
   container.innerHTML = html;
-
   document.getElementById('totalCount').textContent = `${list.length} dari ${data.length} karyawan ditampilkan`;
 }
 
@@ -610,7 +627,7 @@ function showTasks(idx) {
     html += `<div class="task-card">
       <div class="task-num">Tugas ${i+1} dari ${e.tasks.length}</div>
       <div class="task-title">${t.title}</div>
-      <div class="task-prompt">${t.prompt}</div>
+      <div class="task-prompt">${t.prompt || ''}</div>
       ${t.link ? `<a class="task-link" href="${t.link}" target="_blank">🔗 Buka Link Google Drive</a>` : ''}
       <div class="task-actions">
         <button onclick="editTask(${idx}, ${i})">✏️ Edit</button>
@@ -629,7 +646,17 @@ function closePanel() {
   selectedEmpIdx = -1;
 }
 
-// CRUD
+// ===== AIRTABLE WRITE HELPERS =====
+function makeFields(e) {
+  return {
+    Nama: e.name,
+    Divisi: e.dept,
+    Warna: e.color,
+    Tugas: JSON.stringify(e.tasks, null, 2)
+  };
+}
+
+// ===== CRUD =====
 function openModal(mode, empIdx) {
   document.getElementById('modal').classList.add('open');
   if(mode === 'add') {
@@ -649,6 +676,30 @@ function openModal(mode, empIdx) {
       <input id="tLink0" placeholder="Link Google Drive">
     </div>`;
     document.getElementById('modalSaveBtn').textContent = 'Tambah';
+  }
+  if(mode === 'edit' && empIdx >= 0) {
+    editingIndex = empIdx;
+    const e = data[empIdx];
+    document.getElementById('modalTitle').textContent = 'Edit Karyawan';
+    document.getElementById('fName').value = e.name;
+    document.getElementById('fDept').value = e.dept;
+    document.getElementById('fColor').value = e.color;
+    taskCounter = 0;
+    const c = document.getElementById('taskFields');
+    c.innerHTML = '';
+    e.tasks.forEach((t, i) => {
+      const idx = taskCounter++;
+      const div = document.createElement('div');
+      div.className = 'task-input-group';
+      div.style = 'background:#f5f7fa;border:1.5px solid #e0e4ec;border-radius:8px;padding:12px;margin-bottom:8px';
+      div.innerHTML = `
+        <input id="tTitle${idx}" placeholder="Judul tugas" value="${t.title.replace(/"/g,'&quot;')}" style="margin-bottom:6px">
+        <textarea id="tPrompt${idx}" placeholder="Prompt / deskripsi tugas" style="margin-bottom:6px">${(t.prompt||'').replace(/"/g,'&quot;')}</textarea>
+        <input id="tLink${idx}" placeholder="Link Google Drive" value="${(t.link||'').replace(/"/g,'&quot;')}">
+        <button class="btn danger" style="margin-top:6px;font-size:0.75rem;padding:4px 10px" onclick="this.parentElement.remove()">✕ Hapus</button>`;
+      c.appendChild(div);
+    });
+    document.getElementById('modalSaveBtn').textContent = 'Simpan';
   }
 }
 
@@ -687,7 +738,7 @@ function collectTasks() {
   return tasks;
 }
 
-function saveEmployee() {
+async function saveEmployee() {
   const name = document.getElementById('fName').value.trim();
   const dept = document.getElementById('fDept').value;
   const color = document.getElementById('fColor').value;
@@ -695,81 +746,109 @@ function saveEmployee() {
   if(!name) { alert('Nama karyawan harus diisi!'); return; }
   if(tasks.length === 0) { alert('Minimal 1 tugas harus diisi!'); return; }
 
-  if(editingIndex >= 0) {
-    data[editingIndex] = {name, dept, color, tasks};
-  } else {
-    data.push({name, dept, color, tasks});
+  const fields = {Nama: name, Divisi: dept, Warna: color, Tugas: JSON.stringify(tasks, null, 2)};
+  const btn = document.getElementById('modalSaveBtn');
+  btn.textContent = 'Menyimpan...';
+  btn.disabled = true;
+
+  try {
+    if(editingIndex >= 0) {
+      const id = data[editingIndex].id;
+      await airFetch('PATCH', {records: [{id, fields}]});
+      data[editingIndex] = {...data[editingIndex], name, dept, color, tasks};
+    } else {
+      const result = await airFetch('POST', {records: [{fields}]});
+      const rec = result.records?.[0];
+      if(rec) data.push({id: rec.id, name, dept, color, tasks});
+    }
+    closeModal();
+    render();
+    const idx = data.findIndex(e => e.name === name);
+    if(idx >= 0) showTasks(idx);
+  } catch(e) {
+    alert('Gagal menyimpan: ' + e.message);
   }
-  saveData();
-  closeModal();
-  render();
-  const idx = data.findIndex(e => e.name === name);
-  if(idx >= 0) showTasks(idx);
+  btn.textContent = editingIndex >= 0 ? 'Simpan' : 'Tambah';
+  btn.disabled = false;
 }
 
-function addTaskToEmp(idx) {
+async function addTaskToEmp(idx) {
   const title = prompt('Judul tugas:');
   if(!title) return;
   const promptText = prompt('Deskripsi/ prompt:');
   const link = prompt('Link Google Drive (opsional):');
   data[idx].tasks.push({title, prompt: promptText || '', link: link || ''});
-  saveData();
+  try {
+    await airFetch('PATCH', {records: [{id: data[idx].id, fields: makeFields(data[idx])}]});
+  } catch(e) { console.error(e); }
   showTasks(idx);
   renderStats();
   renderEmployees();
 }
 
-function editTask(empIdx, taskIdx) {
+async function editTask(empIdx, taskIdx) {
   const t = data[empIdx].tasks[taskIdx];
   const title = prompt('Judul tugas:', t.title);
   if(!title) return;
   const promptText = prompt('Deskripsi/ prompt:', t.prompt);
   const link = prompt('Link Google Drive:', t.link);
   data[empIdx].tasks[taskIdx] = {title, prompt: promptText || '', link: link || ''};
-  saveData();
+  try {
+    await airFetch('PATCH', {records: [{id: data[empIdx].id, fields: makeFields(data[empIdx])}]});
+  } catch(e) { console.error(e); }
   showTasks(empIdx);
 }
 
-function deleteTask(empIdx, taskIdx) {
+async function deleteTask(empIdx, taskIdx) {
   if(!confirm('Hapus tugas ini?')) return;
   data[empIdx].tasks.splice(taskIdx, 1);
   if(data[empIdx].tasks.length === 0) {
     if(!confirm('Karyawan tidak punya tugas lagi. Hapus karyawan juga?')) {
       data[empIdx].tasks.push({title:'Tugas baru', prompt:'Isi deskripsi tugas', link:''});
     } else {
+      const id = data[empIdx].id;
+      await airFetch('DELETE', {records: [id]});
       data.splice(empIdx, 1);
-      saveData();
       render();
       closePanel();
       return;
     }
   }
-  saveData();
+  try {
+    await airFetch('PATCH', {records: [{id: data[empIdx].id, fields: makeFields(data[empIdx])}]});
+  } catch(e) { console.error(e); }
   showTasks(empIdx);
   renderStats();
   renderEmployees();
 }
 
 function exportData() {
-  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const exportArr = data.map(e => ({name: e.name, dept: e.dept, color: e.color, tasks: e.tasks}));
+  const blob = new Blob([JSON.stringify(exportArr, null, 2)], {type:'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = `prompt-ai-data-${new Date().toISOString().slice(0,10)}.json`;
   a.click();
 }
 
-function importData(event) {
+async function importData(event) {
   const file = event.target.files[0];
   if(!file) return;
   const reader = new FileReader();
-  reader.onload = e => {
+  reader.onload = async e => {
     try {
       const d = JSON.parse(e.target.result);
       if(!Array.isArray(d)) throw 'invalid';
-      data = d;
-      saveData();
-      render();
-      alert(`✅ Berhasil import ${data.length} karyawan!`);
+      const records = d.map(item => ({
+        fields: {Nama: item.name, Divisi: item.dept, Warna: item.color, Tugas: JSON.stringify(item.tasks, null, 2)}
+      }));
+      // Batch upload in chunks of 10
+      for(let i = 0; i < records.length; i += 10) {
+        const batch = records.slice(i, i + 10);
+        await airFetch('POST', {records: batch});
+      }
+      alert(`✅ Berhasil import ${d.length} karyawan!`);
+      await loadData();
     } catch(err) {
       alert('❌ File JSON tidak valid.');
     }
@@ -778,7 +857,8 @@ function importData(event) {
   event.target.value = '';
 }
 
-render();
+// ===== BOOT =====
+loadData();
 </script>
 </body>
 </html>
