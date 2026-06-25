@@ -10,99 +10,66 @@
 
 body {
   font-family: 'Inter', sans-serif;
-  background: #080b1a;
+  background: #f0f2f5;
   min-height: 100vh;
-  color: #e6edf3;
+  color: #1a1a2e;
   padding: 24px;
   position: relative;
   overflow-x: hidden;
 }
-body::before {
-  content: '';
-  position: fixed;
-  top: -50%; left: -50%;
-  width: 200%; height: 200%;
-  background:
-    radial-gradient(ellipse at 20% 50%, rgba(88, 80, 236, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(0, 210, 255, 0.10) 0%, transparent 50%),
-    radial-gradient(ellipse at 60% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 40% 30%, rgba(52, 211, 153, 0.06) 0%, transparent 50%);
-  animation: bgShift 20s ease-in-out infinite alternate;
-  z-index: -1;
-  pointer-events: none;
-}
-@keyframes bgShift {
-  0% { transform: translate(0, 0) rotate(0deg); }
-  100% { transform: translate(30px, -20px) rotate(3deg); }
-}
 
 .container { max-width: 1400px; margin: 0 auto; }
 
-/* ── ANIMATED GRADIENT HEADER ── */
+/* ── HEADER ── */
 .header {
   text-align: center;
-  padding: 48px 20px 24px;
+  padding: 32px 20px 20px;
   position: relative;
 }
 .header h1 {
-  font-size: 3rem;
+  font-size: 2.8rem;
   font-weight: 800;
-  letter-spacing: 2px;
-  background: linear-gradient(270deg, #00d2ff, #7a5cff, #ff6bcb, #ffd93d, #00d2ff);
-  background-size: 600% 600%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gradientMove 6s ease infinite;
+  letter-spacing: 1px;
+  color: #1a1a2e;
   position: relative;
-  z-index: 1;
-  filter: drop-shadow(0 0 30px rgba(122, 92, 255, 0.3));
-}
-@keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  display: inline-block;
 }
 .header h1::after {
   content: '';
   position: absolute;
-  bottom: -6px;
+  bottom: -4px;
   left: 50%;
   transform: translateX(-50%);
-  width: 160px;
+  width: 100px;
   height: 3px;
-  background: linear-gradient(90deg, #00d2ff, #7a5cff, #ff6bcb);
+  background: linear-gradient(90deg, #6c63ff, #48c6ef);
   border-radius: 2px;
-  box-shadow: 0 0 12px rgba(122, 92, 255, 0.5);
 }
 .header p {
-  color: #94a3c4;
+  color: #5a6785;
   font-size: 1rem;
   margin-top: 14px;
-  letter-spacing: 0.5px;
 }
 .header .badge {
   display: inline-block;
-  background: linear-gradient(135deg, rgba(0,210,255,0.1), rgba(122,92,255,0.1));
-  border: 1px solid rgba(122,92,255,0.3);
-  color: #a78bfa;
+  background: #e8ecf4;
+  color: #4a5568;
   font-size: 0.75rem;
   padding: 6px 18px;
   border-radius: 20px;
   margin-top: 10px;
   font-weight: 500;
-  backdrop-filter: blur(8px);
 }
 .divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(122,92,255,0.3), rgba(0,210,255,0.3), transparent);
-  margin: 20px 0 28px;
+  background: #e0e4ec;
+  margin: 16px 0 24px;
 }
 
 /* ── TOOLBAR ── */
 .toolbar {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
   margin-bottom: 24px;
   align-items: center;
@@ -110,55 +77,55 @@ body::before {
 .search-box {
   flex: 1;
   min-width: 200px;
-  background: rgba(15, 20, 40, 0.7);
-  border: 1px solid rgba(122, 92, 255, 0.2);
+  background: #fff;
+  border: 1.5px solid #d1d6e0;
   border-radius: 12px;
   padding: 12px 18px;
-  color: #e6edf3;
+  color: #1a1a2e;
   font-size: 0.9rem;
   outline: none;
-  transition: all 0.3s;
-  backdrop-filter: blur(8px);
+  transition: all 0.25s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 .search-box:focus {
-  border-color: #7a5cff;
-  box-shadow: 0 0 0 3px rgba(122, 92, 255, 0.15), 0 0 20px rgba(122, 92, 255, 0.1);
+  border-color: #6c63ff;
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.12);
 }
-.search-box::placeholder { color: #4a5580; }
+.search-box::placeholder { color: #9aa5b8; }
 
 .toolbar .btn {
-  background: rgba(15, 20, 40, 0.7);
-  border: 1px solid rgba(122, 92, 255, 0.2);
-  color: #c4b5fd;
+  background: #fff;
+  border: 1.5px solid #d1d6e0;
+  color: #4a5568;
   padding: 12px 20px;
   border-radius: 12px;
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 500;
-  transition: all 0.3s;
+  transition: all 0.25s;
   white-space: nowrap;
-  backdrop-filter: blur(8px);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 .toolbar .btn:hover {
-  background: rgba(122, 92, 255, 0.15);
-  border-color: #7a5cff;
+  border-color: #6c63ff;
+  color: #6c63ff;
   transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(122, 92, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.1);
 }
 .toolbar .btn.primary {
-  background: linear-gradient(135deg, #7a5cff, #00d2ff);
+  background: linear-gradient(135deg, #6c63ff, #48c6ef);
   border: none;
   color: #fff;
   font-weight: 600;
-  box-shadow: 0 4px 15px rgba(122, 92, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.25);
 }
 .toolbar .btn.primary:hover {
-  box-shadow: 0 6px 25px rgba(122, 92, 255, 0.4);
+  box-shadow: 0 6px 20px rgba(108, 99, 255, 0.3);
   transform: translateY(-2px);
 }
-.toolbar .btn.danger { background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4); color: #fca5a5; }
-.toolbar .btn.danger:hover { background: rgba(239, 68, 68, 0.3); border-color: #ef4444; }
-.toolbar .total-count { color: #7c8db5; font-size: 0.85rem; margin-left: auto; white-space: nowrap; }
+.toolbar .btn.danger { color: #e53e3e; border-color: #fcc; }
+.toolbar .btn.danger:hover { background: #fff5f5; border-color: #e53e3e; color: #c53030; }
+.toolbar .total-count { color: #7a8899; font-size: 0.85rem; margin-left: auto; white-space: nowrap; }
 
 /* ── STATS CARDS ── */
 .stats {
@@ -168,42 +135,29 @@ body::before {
   margin-bottom: 24px;
 }
 .stat-card {
-  background: rgba(15, 20, 40, 0.6);
-  border: 1px solid rgba(122, 92, 255, 0.15);
+  background: #fff;
+  border: 1.5px solid #e8ecf4;
   border-radius: 16px;
-  padding: 18px 14px;
+  padding: 20px 14px;
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s;
-  border-left: 4px solid var(--accent, #7a5cff);
-  backdrop-filter: blur(10px);
-  position: relative;
-  overflow: hidden;
-}
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent, #7a5cff), transparent);
-  opacity: 0;
-  transition: opacity 0.3s;
+  transition: all 0.25s;
+  border-left: 4px solid var(--accent, #6c63ff);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 .stat-card:hover {
-  background: rgba(122, 92, 255, 0.08);
-  border-color: var(--accent, #7a5cff);
+  border-color: var(--accent, #6c63ff);
   transform: translateY(-3px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(122, 92, 255, 0.1);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
 }
-.stat-card:hover::before { opacity: 1; }
 .stat-card.active {
-  background: rgba(122, 92, 255, 0.1);
-  border-color: var(--accent, #7a5cff);
-  box-shadow: 0 0 0 1px var(--accent, #7a5cff), 0 0 20px rgba(122, 92, 255, 0.15);
+  background: #f8f9ff;
+  border-color: var(--accent, #6c63ff);
+  box-shadow: 0 0 0 1.5px var(--accent, #6c63ff), 0 4px 12px rgba(108, 99, 255, 0.08);
 }
-.stat-card .label { font-size: 0.8rem; font-weight: 600; color: #c9d5e8; }
-.stat-card .count { font-size: 1.6rem; font-weight: 700; color: var(--accent, #7a5cff); margin: 4px 0; }
-.stat-card .sub { font-size: 0.68rem; color: #7c8db5; }
+.stat-card .label { font-size: 0.8rem; font-weight: 600; color: #4a5568; }
+.stat-card .count { font-size: 1.6rem; font-weight: 700; color: var(--accent, #6c63ff); margin: 4px 0; }
+.stat-card .sub { font-size: 0.68rem; color: #808e9e; }
 
 /* ── EMPLOYEE GRID ── */
 .employee-grid {
@@ -213,37 +167,26 @@ body::before {
   margin-bottom: 24px;
 }
 .emp-card {
-  background: rgba(15, 20, 40, 0.6);
-  border: 1px solid rgba(122, 92, 255, 0.12);
+  background: #fff;
+  border: 1.5px solid #e8ecf4;
   border-radius: 14px;
   padding: 16px 18px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.25s;
   display: flex;
   align-items: center;
   gap: 12px;
-  backdrop-filter: blur(10px);
-  position: relative;
-  overflow: hidden;
-}
-.emp-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 14px;
-  background: linear-gradient(135deg, rgba(122,92,255,0.05), transparent 60%);
-  pointer-events: none;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 .emp-card:hover {
-  background: rgba(122, 92, 255, 0.08);
-  border-color: rgba(122, 92, 255, 0.4);
+  border-color: #6c63ff;
   transform: translateY(-3px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(122, 92, 255, 0.08);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
 }
 .emp-card.active {
-  border-color: #7a5cff;
-  background: rgba(122, 92, 255, 0.1);
-  box-shadow: 0 0 20px rgba(122, 92, 255, 0.15);
+  border-color: #6c63ff;
+  background: #f8f9ff;
+  box-shadow: 0 0 0 1.5px #6c63ff;
 }
 .emp-card .avatar {
   width: 40px; height: 40px;
@@ -251,34 +194,30 @@ body::before {
   display: flex; align-items: center; justify-content: center;
   font-weight: 700; font-size: 0.9rem;
   color: #fff; flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  position: relative;
-  z-index: 1;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 }
-.emp-card .info { flex: 1; min-width: 0; position: relative; z-index: 1; }
-.emp-card .name { font-size: 0.88rem; font-weight: 600; color: #e8ecf4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.emp-card .dept { font-size: 0.72rem; color: #7c8db5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+.emp-card .info { flex: 1; min-width: 0; }
+.emp-card .name { font-size: 0.88rem; font-weight: 600; color: #1a1a2e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.emp-card .dept { font-size: 0.72rem; color: #6b7a8f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
 .emp-card .task-count {
   font-size: 0.7rem;
-  color: #a78bfa;
+  color: #6c63ff;
   flex-shrink: 0;
-  background: rgba(122, 92, 255, 0.1);
+  background: #eeefff;
   padding: 4px 10px;
   border-radius: 8px;
   font-weight: 500;
-  position: relative; z-index: 1;
 }
 
 /* ── TASK PANEL ── */
 .task-panel {
-  background: rgba(15, 20, 40, 0.7);
-  border: 1px solid rgba(122, 92, 255, 0.2);
+  background: #fff;
+  border: 1.5px solid #e0e4ec;
   border-radius: 16px;
   padding: 28px;
   margin-top: 20px;
   display: none;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
 }
 .task-panel.visible { display: block; animation: panelSlide 0.3s ease; }
 @keyframes panelSlide {
@@ -293,19 +232,19 @@ body::before {
   flex-wrap: wrap;
   gap: 8px;
 }
-.task-panel .panel-header h2 { font-size: 1.3rem; font-weight: 700; color: #f0f4ff; }
+.task-panel .panel-header h2 { font-size: 1.3rem; font-weight: 700; color: #1a1a2e; }
 .task-panel .panel-header .dept-tag {
   font-size: 0.72rem;
   padding: 5px 14px;
   border-radius: 12px;
   font-weight: 500;
   color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 .task-panel .panel-header .btn-close {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  color: #fca5a5;
+  background: #f7f7f7;
+  border: 1px solid #e0e4ec;
+  color: #666;
   font-size: 1.2rem;
   cursor: pointer;
   width: 36px; height: 36px;
@@ -314,142 +253,141 @@ body::before {
   transition: all 0.2s;
 }
 .task-panel .panel-header .btn-close:hover {
-  background: rgba(239, 68, 68, 0.2);
-  border-color: #ef4444;
-  color: #ef4444;
+  background: #fee;
+  border-color: #e53e3e;
+  color: #e53e3e;
 }
 
 .task-card {
-  background: rgba(8, 11, 26, 0.6);
-  border: 1px solid rgba(122, 92, 255, 0.1);
+  background: #f8f9fc;
+  border: 1.5px solid #e8ecf4;
   border-radius: 14px;
   padding: 20px;
   margin-bottom: 14px;
   transition: all 0.2s;
   position: relative;
-  overflow: hidden;
 }
 .task-card::before {
   content: '';
   position: absolute;
   left: 0; top: 0; bottom: 0;
   width: 3px;
-  background: linear-gradient(180deg, #7a5cff, #00d2ff);
+  background: linear-gradient(180deg, #6c63ff, #48c6ef);
   border-radius: 0 2px 2px 0;
 }
 .task-card:hover {
-  border-color: rgba(122, 92, 255, 0.25);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  border-color: #6c63ff;
+  box-shadow: 0 4px 16px rgba(108, 99, 255, 0.06);
 }
-.task-card .task-title { font-size: 0.92rem; font-weight: 600; color: #f0f4ff; margin-bottom: 4px; }
+.task-card .task-title { font-size: 0.92rem; font-weight: 600; color: #1a1a2e; margin-bottom: 4px; }
 .task-card .task-num {
   font-size: 0.7rem;
-  color: #a78bfa;
+  color: #6c63ff;
   font-weight: 500;
   margin-bottom: 10px;
   display: inline-block;
-  background: rgba(122, 92, 255, 0.1);
+  background: #eeefff;
   padding: 2px 10px;
   border-radius: 6px;
 }
-.task-card .task-prompt { font-size: 0.84rem; color: #b0bdd4; line-height: 1.6; margin-bottom: 12px; white-space: pre-wrap; }
+.task-card .task-prompt { font-size: 0.84rem; color: #4a5568; line-height: 1.6; margin-bottom: 12px; white-space: pre-wrap; }
 .task-card .task-link {
   display: inline-flex; align-items: center; gap: 6px;
-  background: linear-gradient(135deg, rgba(122,92,255,0.15), rgba(0,210,255,0.1));
-  color: #a78bfa;
+  background: #f0f0ff;
+  color: #6c63ff;
   padding: 8px 16px; border-radius: 10px;
   font-size: 0.8rem; text-decoration: none;
-  border: 1px solid rgba(122, 92, 255, 0.2);
-  transition: all 0.3s;
+  border: 1.5px solid #dcdcff;
+  transition: all 0.25s;
   font-weight: 500;
 }
 .task-card .task-link:hover {
-  background: linear-gradient(135deg, rgba(122,92,255,0.25), rgba(0,210,255,0.15));
-  border-color: #7a5cff;
-  box-shadow: 0 4px 15px rgba(122, 92, 255, 0.2);
+  background: #e8e8ff;
+  border-color: #6c63ff;
+  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.1);
   transform: translateY(-1px);
 }
 .task-card .task-actions { margin-top: 12px; display: flex; gap: 8px; }
 .task-card .task-actions button {
-  border: 1px solid rgba(122, 92, 255, 0.15);
-  background: rgba(122, 92, 255, 0.08);
-  color: #94a3c4;
+  border: 1.5px solid #e0e4ec;
+  background: #fff;
+  color: #5a6785;
   padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 0.75rem;
   transition: all 0.2s;
 }
 .task-card .task-actions button:hover {
-  border-color: #7a5cff;
-  color: #c4b5fd;
-  background: rgba(122, 92, 255, 0.15);
+  border-color: #6c63ff;
+  color: #6c63ff;
+  background: #f8f8ff;
 }
 
 /* ── MODAL ── */
 .modal {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(5, 5, 20, 0.8);
+  background: rgba(0, 0, 0, 0.35);
   display: none; align-items: center; justify-content: center;
   z-index: 1000;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(4px);
 }
 .modal.open { display: flex; }
 .modal-content {
-  background: rgba(15, 20, 40, 0.95);
-  border: 1px solid rgba(122, 92, 255, 0.25);
+  background: #fff;
+  border: none;
   border-radius: 20px;
   padding: 32px;
   width: 90%; max-width: 560px;
   max-height: 85vh; overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(122, 92, 255, 0.1);
-  animation: modalIn 0.3s ease;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+  animation: modalIn 0.25s ease;
 }
 @keyframes modalIn {
-  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
-.modal-content h3 { font-size: 1.3rem; font-weight: 700; color: #f0f4ff; margin-bottom: 20px; }
-.modal-content label { display: block; font-size: 0.82rem; font-weight: 500; color: #94a3c4; margin-bottom: 6px; margin-top: 14px; }
+.modal-content h3 { font-size: 1.3rem; font-weight: 700; color: #1a1a2e; margin-bottom: 20px; }
+.modal-content label { display: block; font-size: 0.82rem; font-weight: 500; color: #5a6785; margin-bottom: 6px; margin-top: 14px; }
 .modal-content input,.modal-content textarea,.modal-content select {
   width: 100%;
-  background: rgba(8, 11, 26, 0.8);
-  border: 1px solid rgba(122, 92, 255, 0.15);
-  border-radius: 10px; padding: 12px 14px; color: #e6edf3;
+  background: #f5f7fa;
+  border: 1.5px solid #d1d6e0;
+  border-radius: 10px; padding: 12px 14px; color: #1a1a2e;
   font-size: 0.85rem; outline: none; font-family: inherit;
-  transition: all 0.3s;
+  transition: all 0.25s;
 }
 .modal-content input:focus,.modal-content textarea:focus,.modal-content select:focus {
-  border-color: #7a5cff;
-  box-shadow: 0 0 0 3px rgba(122, 92, 255, 0.12);
+  border-color: #6c63ff;
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
 }
 .modal-content textarea { min-height: 80px; resize: vertical; }
 .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
 .modal-actions button {
-  border: 1px solid rgba(122, 92, 255, 0.2);
-  background: rgba(122, 92, 255, 0.1);
-  color: #c4b5fd;
+  border: 1.5px solid #d1d6e0;
+  background: #fff;
+  color: #4a5568;
   padding: 11px 24px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; font-weight: 500;
-  transition: all 0.3s;
+  transition: all 0.25s;
 }
-.modal-actions button:hover { border-color: #7a5cff; background: rgba(122, 92, 255, 0.2); }
+.modal-actions button:hover { border-color: #6c63ff; color: #6c63ff; }
 .modal-actions button.primary {
-  background: linear-gradient(135deg, #7a5cff, #00d2ff);
+  background: linear-gradient(135deg, #6c63ff, #48c6ef);
   border: none; color: #fff;
-  box-shadow: 0 4px 15px rgba(122, 92, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.25);
 }
 .modal-actions button.primary:hover {
-  box-shadow: 0 6px 25px rgba(122, 92, 255, 0.4);
+  box-shadow: 0 6px 20px rgba(108, 99, 255, 0.3);
   transform: translateY(-1px);
 }
-.modal-actions button.danger { background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.3); color: #fca5a5; }
-.modal-actions button.danger:hover { background: rgba(239, 68, 68, 0.3); border-color: #ef4444; }
+.modal-actions button.danger { color: #e53e3e; border-color: #fcc; }
+.modal-actions button.danger:hover { background: #fff5f5; border-color: #e53e3e; color: #c53030; }
 
 .file-input-wrap { position: relative; }
 .file-input-wrap input[type=file] { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; top: 0; left: 0; }
 
 /* ── SCROLLBAR ── */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: rgba(8, 11, 26, 0.5); }
-::-webkit-scrollbar-thumb { background: rgba(122, 92, 255, 0.3); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(122, 92, 255, 0.5); }
+::-webkit-scrollbar-track { background: #f0f2f5; }
+::-webkit-scrollbar-thumb { background: #c5cdd8; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #aab4c2; }
 
 @media (max-width: 600px) {
   body { padding: 12px; }
@@ -502,10 +440,10 @@ body::before {
     </select>
     <label>Warna Avatar</label>
     <input id="fColor" type="color" value="#58a6ff">
-    <hr style="border-color:#21262d;margin:16px 0">
-    <h4 style="color:#c9d1d9;font-size:0.9rem;margin-bottom:8px">Tugas</h4>
+    <hr style="border:none;border-top:1.5px solid #e0e4ec;margin:16px 0">
+    <h4 style="color:#4a5568;font-size:0.9rem;margin-bottom:8px">Tugas</h4>
     <div id="taskFields">
-      <div class="task-input-group" style="background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:12px;margin-bottom:8px">
+      <div class="task-input-group" style="background:#f5f7fa;border:1.5px solid #e0e4ec;border-radius:8px;padding:12px;margin-bottom:8px">
         <input id="tTitle0" placeholder="Judul tugas" style="margin-bottom:6px">
         <textarea id="tPrompt0" placeholder="Prompt / deskripsi tugas" style="margin-bottom:6px"></textarea>
         <input id="tLink0" placeholder="Link Google Drive">
@@ -524,63 +462,63 @@ let editingIndex = -1;
 let taskCounter = 1;
 
 const DEPT_COLORS = {
-  'Finance': '#ff6b6b','Accounting':'#ffd93d','Perpajakan':'#6bcb77','Legal & Admin':'#4d96ff','Lainnya':'#bc8cff'
+  'Finance': '#e53e3e','Accounting':'#d69e2e','Perpajakan':'#38a169','Legal & Admin':'#3182ce','Lainnya':'#805ad5'
 };
 const DEPT_ICONS = {
   'Finance':'💰','Accounting':'📊','Perpajakan':'🧾','Legal & Admin':'⚖️','Lainnya':'📋'
 };
 
 let data = JSON.parse(localStorage.getItem('promptAI_data')) || [
-  {name:'Rina Amelia',dept:'Finance',color:'#ff6b6b',tasks:[{title:'Laporan Arus Kas Harian',prompt:'Buat laporan arus kas harian dalam format Excel, pisahkan pemasukan dan pengeluaran per transaksi.',link:'https://drive.google.com'}]},
-  {name:'Budi Santoso',dept:'Finance',color:'#ff6b6b',tasks:[{title:'Rekonsiliasi Bank',prompt:'Cocokkan transaksi bank dengan catatan internal, tandai perbedaan.',link:'https://drive.google.com'}]},
-  {name:'Dewi Lestari',dept:'Finance',color:'#ff6b6b',tasks:[{title:'Monitoring Budget Dept',prompt:'Buat dashboard monitoring anggaran per divisi, bandingkan realisasi vs anggaran.',link:'https://drive.google.com'}]},
-  {name:'Ahmad Fauzi',dept:'Finance',color:'#ff6b6b',tasks:[{title:'Laporan Pajak Bulanan',prompt:'Siapkan data PPN & PPh 21 untuk pelaporan bulan ini, lampirkan bukti potong.',link:'https://drive.google.com'}]},
-  {name:'Siti Nurhaliza',dept:'Accounting',color:'#ffd93d',tasks:[{title:'Jurnal Penutup Bulanan',prompt:'Buat jurnal penutup akhir bulan, termasuk penyesuaian aset dan beban.',link:'https://drive.google.com'}]},
-  {name:'Rizky Pratama',dept:'Accounting',color:'#ffd93d',tasks:[{title:'Neraca Saldo',prompt:'Susun neraca saldo per 30 Juni, pastikan balance.',link:'https://drive.google.com'}]},
-  {name:'Maya Wijaya',dept:'Perpajakan',color:'#6bcb77',tasks:[{title:'Perhitungan PPh 21',prompt:'Hitung PPh 21 seluruh karyawan, gunakan tarif Pasal 17 terbaru.',link:'https://drive.google.com'}]},
-  {name:'Dimas Anggara',dept:'Perpajakan',color:'#6bcb77',tasks:[{title:'SPT Masa PPN',prompt:'Isi dan laporkan SPT Masa PPN masa pajak Juni, lampirkan faktur pajak.',link:'https://drive.google.com'}]},
-  {name:'Putri Angraini',dept:'Accounting',color:'#ffd93d',tasks:[{title:'Laporan Laba Rugi',prompt:'Buat laporan laba rugi bulan Juni dengan breakdown per divisi.',link:'https://drive.google.com'}]},
-  {name:'Farhan Maulana',dept:'Legal & Admin',color:'#4d96ff',tasks:[{title:'Review Kontrak Vendor',prompt:'Review kontrak vendor IT support, perhatikan klausul pembayaran dan jangka waktu.',link:'https://drive.google.com'}]},
-  {name:'Lisa Andriani',dept:'Legal & Admin',color:'#4d96ff',tasks:[{title:'Pengurusan NIB & Legalitas',prompt:'Siapkan dokumen pengurusan NIB perusahaan baru, cek kelengkapan.',link:'https://drive.google.com'}]},
-  {name:'Ani Rahma',dept:'Finance',color:'#ff6b6b',tasks:[{title:'Input Data Transaksi',prompt:'Input semua transaksi harian ke sistem akuntansi, pastikan sesuai bukti.',link:'https://drive.google.com'}]},
-  {name:'Bambang S.',dept:'Accounting',color:'#ffd93d',tasks:[{title:'Rekap Piutang',prompt:'Buat rekap piutang per pelanggan, kelompokkan berdasarkan umur piutang.',link:'https://drive.google.com'}]},
-  {name:'Cindy K.',dept:'Perpajakan',color:'#6bcb77',tasks:[{title:'Dokumen Tax Amnesty',prompt:'Siapkan dokumen pendukung untuk program pengungkapan sukarela.',link:'https://drive.google.com'}]},
-  {name:'Denny A.',dept:'Finance',color:'#ff6b6b',tasks:[{title:'Cash Flow Projection',prompt:'Buat proyeksi arus kas 3 bulan ke depan berdasarkan data historis.',link:'https://drive.google.com'}]},
-  {name:'Eka Putri',dept:'Accounting',color:'#ffd93d',tasks:[{title:'Depresiasi Aset',prompt:'Hitung dan catat depresiasi aset tetap bulan ini.',link:'https://drive.google.com'}]},
-  {name:'Fajar H.',dept:'Finance',color:'#ff6b6b',tasks:[{title:'Budget vs Actual',prompt:'Bandingkan realisasi anggaran bulan ini dengan budget, analisis selisih.',link:'https://drive.google.com'}]},
-  {name:'Gita P.',dept:'Legal & Admin',color:'#4d96ff',tasks:[{title:'Dokumen RUPS',prompt:'Siapkan notulen dan dokumen RUPS tahunan.',link:'https://drive.google.com'}]},
-  {name:'Hendra G.',dept:'Accounting',color:'#ffd93d',tasks:[{title:'Stock Opname',prompt:'Lakukan stock opname akhir bulan, cocokkan fisik dengan catatan.',link:'https://drive.google.com'}]},
-  {name:'Intan Sari',dept:'Perpajakan',color:'#6bcb77',tasks:[{title:'Konsolidasi Pajak',prompt:'Konsolidasi data perpajakan seluruh entitas anak perusahaan.',link:'https://drive.google.com'}]},
-  {name:'Joko W.',dept:'Finance',color:'#ff6b6b',tasks:[{title:'Analisis Biaya',prompt:'Analisis biaya operasional bulan ini, identifikasi area penghematan.',link:'https://drive.google.com'}]},
-  {name:'Karin A.',dept:'Accounting',color:'#ffd93d',tasks:[{title:'Jurnal Koreksi',prompt:'Buat jurnal koreksi atas kesalahan pencatatan bulan sebelumnya.',link:'https://drive.google.com'}]},
-  {name:'Lutfi M.',dept:'Finance',color:'#ff6b6b',tasks:[{title:'Rekap Bank Garansi',prompt:'Rekap seluruh bank garansi yang masih berlaku, catat jatuh tempo.',link:'https://drive.google.com'}]},
-  {name:'Mila R.',dept:'Perpajakan',color:'#6bcb77',tasks:[{title:'e-Faktur',prompt:'Upload dan laporkan e-Faktur PPN masa ini, pastikan approval.',link:'https://drive.google.com'}]},
-  {name:'Nadia F.',dept:'Legal & Admin',color:'#4d96ff',tasks:[{title:'Arsip Kontrak',prompt:'Digitalisasi dan arsipkan seluruh kontrak vendor per divisi.',link:'https://drive.google.com'}]},
-  {name:'Oscar T.',dept:'Finance',color:'#ff6b6b',tasks:[{title:'Laporan Keuangan Bulanan',prompt:'Susun laporan keuangan bulanan: neraca, laba rugi, arus kas.',link:'https://drive.google.com'}]},
-  {name:'Putra D.',dept:'Accounting',color:'#ffd93d',tasks:[{title:'Akun Hutang',prompt:'Rekap hutang usaha per supplier, kelompokkan berdasarkan jatuh tempo.',link:'https://drive.google.com'}]},
-  {name:'Queen A.',dept:'Finance',color:'#ff6b6b',tasks:[{title:'Forecasting Revenue',prompt:'Buat forecasting pendapatan untuk Q3 2026 berdasarkan data Q1-Q2.',link:'https://drive.google.com'}]},
-  {name:'Rendi K.',dept:'Accounting',color:'#ffd93d',tasks:[{title:'Buku Besar',prompt:'Cetak dan review buku besar semua akun untuk audit internal.',link:'https://drive.google.com'}]},
-  {name:'Sasa P.',dept:'Perpajakan',color:'#6bcb77',tasks:[{title:'PPh Final',prompt:'Hitung PPh Final untuk transaksi sewa dan jasa konstruksi.',link:'https://drive.google.com'}]},
-  {name:'Tomi S.',dept:'Legal & Admin',color:'#4d96ff',tasks:[{title:'Pengurusan IMTA',prompt:'Siapkan dokumen pengurusan IMTA untuk tenaga kerja asing baru.',link:'https://drive.google.com'}]},
-  {name:'Umar H.',dept:'Finance',color:'#ff6b6b',tasks:[{title:'Audit Internal',prompt:'Siapkan data untuk audit internal, rekap dokumen pendukung.',link:'https://drive.google.com'}]},
-  {name:'Vina G.',dept:'Accounting',color:'#ffd93d',tasks:[{title:'Konsolidasi Laporan',prompt:'Konsolidasi laporan keuangan seluruh entitas untuk laporan gabungan.',link:'https://drive.google.com'}]},
-  {name:'Wawan S.',dept:'Finance',color:'#ff6b6b',tasks:[{title:'Rekap Biaya Proyek',prompt:'Rekap seluruh biaya proyek, pisahkan modal dan operasional.',link:'https://drive.google.com'}]},
-  {name:'Xena M.',dept:'Perpajakan',color:'#6bcb77',tasks:[{title:'Dokumen Transfer Pricing',prompt:'Siapkan dokumen transfer pricing untuk pelaporan tahunan.',link:'https://drive.google.com'}]},
-  {name:'Yoga P.',dept:'Accounting',color:'#ffd93d',tasks:[{title:'Rekonsiliasi Piutang',prompt:'Rekonsiliasi piutang usaha dengan aging schedule.',link:'https://drive.google.com'}]},
-  {name:'Zara N.',dept:'Finance',color:'#ff6b6b',tasks:[{title:'Laporan Realisasi Anggaran',prompt:'Buat laporan realisasi anggaran per departemen.',link:'https://drive.google.com'}]},
-  {name:'Adi P.',dept:'Legal & Admin',color:'#4d96ff',tasks:[{title:'Draft Perjanjian',prompt:'Buat draft perjanjian kerjasama dengan vendor baru.',link:'https://drive.google.com'}]},
-  {name:'Bella C.',dept:'Accounting',color:'#ffd93d',tasks:[{title:'Jurnal Pembelian',prompt:'Posting jurnal pembelian bulan ini, pastikan sesuai PO.',link:'https://drive.google.com'}]},
-  {name:'Cakra D.',dept:'Finance',color:'#ff6b6b',tasks:[{title:'Analisis Rasio',prompt:'Hitung rasio keuangan: likuiditas, solvabilitas, profitabilitas.',link:'https://drive.google.com'}]},
-  {name:'Dewi S.',dept:'Perpajakan',color:'#6bcb77',tasks:[{title:'SPT Tahunan Badan',prompt:'Siapkan data dan hitung PPh Badan tahun pajak 2025.',link:'https://drive.google.com'}]},
-  {name:'Elang J.',dept:'Finance',color:'#ff6b6b',tasks:[{title:'Monitoring Investasi',prompt:'Buat laporan monitoring investasi jangka pendek dan return-nya.',link:'https://drive.google.com'}]},
-  {name:'Fitri A.',dept:'Accounting',color:'#ffd93d',tasks:[{title:'Catatan Atas Laporan',prompt:'Buat catatan atas laporan keuangan (CALK) bulanan.',link:'https://drive.google.com'}]},
-  {name:'Gilang R.',dept:'Finance',color:'#ff6b6b',tasks:[{title:'Rekap Biaya Marketing',prompt:'Rekap biaya marketing bulan ini, bandingkan dengan budget.',link:'https://drive.google.com'}]},
-  {name:'Hana K.',dept:'Legal & Admin',color:'#4d96ff',tasks:[{title:'Legal Opinion',prompt:'Buat legal opinion terkait kerjasama joint venture.',link:'https://drive.google.com'}]},
-  {name:'Iqbal M.',dept:'Accounting',color:'#ffd93d',tasks:[{title:'Audit Trail',prompt:'Siapkan audit trail untuk transaksi keuangan bulan ini.',link:'https://drive.google.com'}]},
-  {name:'Julia R.',dept:'Perpajakan',color:'#6bcb77',tasks:[{title:'Tax Planning',prompt:'Buat tax planning untuk optimalisasi beban pajak tahun depan.',link:'https://drive.google.com'}]},
-  {name:'Kevin H.',dept:'Finance',color:'#ff6b6b',tasks:[{title:'Working Capital',prompt:'Analisis working capital dan identifikasi area perbaikan.',link:'https://drive.google.com'}]},
-  {name:'Laras N.',dept:'Accounting',color:'#ffd93d',tasks:[{title:'Laporan Segmentasi',prompt:'Buat laporan keuangan segmentasi per divisi bisnis.',link:'https://drive.google.com'}]},
-  {name:'Maulana R.',dept:'Finance',color:'#ff6b6b',tasks:[{title:'AR Collection',prompt:'Follow up penagihan piutang jatuh tempo, buat laporan aging.',link:'https://drive.google.com'}]}
+  {name:'Rina Amelia',dept:'Finance',color:'#e53e3e',tasks:[{title:'Laporan Arus Kas Harian',prompt:'Buat laporan arus kas harian dalam format Excel, pisahkan pemasukan dan pengeluaran per transaksi.',link:'https://drive.google.com'}]},
+  {name:'Budi Santoso',dept:'Finance',color:'#e53e3e',tasks:[{title:'Rekonsiliasi Bank',prompt:'Cocokkan transaksi bank dengan catatan internal, tandai perbedaan.',link:'https://drive.google.com'}]},
+  {name:'Dewi Lestari',dept:'Finance',color:'#e53e3e',tasks:[{title:'Monitoring Budget Dept',prompt:'Buat dashboard monitoring anggaran per divisi, bandingkan realisasi vs anggaran.',link:'https://drive.google.com'}]},
+  {name:'Ahmad Fauzi',dept:'Finance',color:'#e53e3e',tasks:[{title:'Laporan Pajak Bulanan',prompt:'Siapkan data PPN & PPh 21 untuk pelaporan bulan ini, lampirkan bukti potong.',link:'https://drive.google.com'}]},
+  {name:'Siti Nurhaliza',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Jurnal Penutup Bulanan',prompt:'Buat jurnal penutup akhir bulan, termasuk penyesuaian aset dan beban.',link:'https://drive.google.com'}]},
+  {name:'Rizky Pratama',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Neraca Saldo',prompt:'Susun neraca saldo per 30 Juni, pastikan balance.',link:'https://drive.google.com'}]},
+  {name:'Maya Wijaya',dept:'Perpajakan',color:'#38a169',tasks:[{title:'Perhitungan PPh 21',prompt:'Hitung PPh 21 seluruh karyawan, gunakan tarif Pasal 17 terbaru.',link:'https://drive.google.com'}]},
+  {name:'Dimas Anggara',dept:'Perpajakan',color:'#38a169',tasks:[{title:'SPT Masa PPN',prompt:'Isi dan laporkan SPT Masa PPN masa pajak Juni, lampirkan faktur pajak.',link:'https://drive.google.com'}]},
+  {name:'Putri Angraini',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Laporan Laba Rugi',prompt:'Buat laporan laba rugi bulan Juni dengan breakdown per divisi.',link:'https://drive.google.com'}]},
+  {name:'Farhan Maulana',dept:'Legal & Admin',color:'#3182ce',tasks:[{title:'Review Kontrak Vendor',prompt:'Review kontrak vendor IT support, perhatikan klausul pembayaran dan jangka waktu.',link:'https://drive.google.com'}]},
+  {name:'Lisa Andriani',dept:'Legal & Admin',color:'#3182ce',tasks:[{title:'Pengurusan NIB & Legalitas',prompt:'Siapkan dokumen pengurusan NIB perusahaan baru, cek kelengkapan.',link:'https://drive.google.com'}]},
+  {name:'Ani Rahma',dept:'Finance',color:'#e53e3e',tasks:[{title:'Input Data Transaksi',prompt:'Input semua transaksi harian ke sistem akuntansi, pastikan sesuai bukti.',link:'https://drive.google.com'}]},
+  {name:'Bambang S.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Rekap Piutang',prompt:'Buat rekap piutang per pelanggan, kelompokkan berdasarkan umur piutang.',link:'https://drive.google.com'}]},
+  {name:'Cindy K.',dept:'Perpajakan',color:'#38a169',tasks:[{title:'Dokumen Tax Amnesty',prompt:'Siapkan dokumen pendukung untuk program pengungkapan sukarela.',link:'https://drive.google.com'}]},
+  {name:'Denny A.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Cash Flow Projection',prompt:'Buat proyeksi arus kas 3 bulan ke depan berdasarkan data historis.',link:'https://drive.google.com'}]},
+  {name:'Eka Putri',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Depresiasi Aset',prompt:'Hitung dan catat depresiasi aset tetap bulan ini.',link:'https://drive.google.com'}]},
+  {name:'Fajar H.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Budget vs Actual',prompt:'Bandingkan realisasi anggaran bulan ini dengan budget, analisis selisih.',link:'https://drive.google.com'}]},
+  {name:'Gita P.',dept:'Legal & Admin',color:'#3182ce',tasks:[{title:'Dokumen RUPS',prompt:'Siapkan notulen dan dokumen RUPS tahunan.',link:'https://drive.google.com'}]},
+  {name:'Hendra G.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Stock Opname',prompt:'Lakukan stock opname akhir bulan, cocokkan fisik dengan catatan.',link:'https://drive.google.com'}]},
+  {name:'Intan Sari',dept:'Perpajakan',color:'#38a169',tasks:[{title:'Konsolidasi Pajak',prompt:'Konsolidasi data perpajakan seluruh entitas anak perusahaan.',link:'https://drive.google.com'}]},
+  {name:'Joko W.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Analisis Biaya',prompt:'Analisis biaya operasional bulan ini, identifikasi area penghematan.',link:'https://drive.google.com'}]},
+  {name:'Karin A.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Jurnal Koreksi',prompt:'Buat jurnal koreksi atas kesalahan pencatatan bulan sebelumnya.',link:'https://drive.google.com'}]},
+  {name:'Lutfi M.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Rekap Bank Garansi',prompt:'Rekap seluruh bank garansi yang masih berlaku, catat jatuh tempo.',link:'https://drive.google.com'}]},
+  {name:'Mila R.',dept:'Perpajakan',color:'#38a169',tasks:[{title:'e-Faktur',prompt:'Upload dan laporkan e-Faktur PPN masa ini, pastikan approval.',link:'https://drive.google.com'}]},
+  {name:'Nadia F.',dept:'Legal & Admin',color:'#3182ce',tasks:[{title:'Arsip Kontrak',prompt:'Digitalisasi dan arsipkan seluruh kontrak vendor per divisi.',link:'https://drive.google.com'}]},
+  {name:'Oscar T.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Laporan Keuangan Bulanan',prompt:'Susun laporan keuangan bulanan: neraca, laba rugi, arus kas.',link:'https://drive.google.com'}]},
+  {name:'Putra D.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Akun Hutang',prompt:'Rekap hutang usaha per supplier, kelompokkan berdasarkan jatuh tempo.',link:'https://drive.google.com'}]},
+  {name:'Queen A.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Forecasting Revenue',prompt:'Buat forecasting pendapatan untuk Q3 2026 berdasarkan data Q1-Q2.',link:'https://drive.google.com'}]},
+  {name:'Rendi K.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Buku Besar',prompt:'Cetak dan review buku besar semua akun untuk audit internal.',link:'https://drive.google.com'}]},
+  {name:'Sasa P.',dept:'Perpajakan',color:'#38a169',tasks:[{title:'PPh Final',prompt:'Hitung PPh Final untuk transaksi sewa dan jasa konstruksi.',link:'https://drive.google.com'}]},
+  {name:'Tomi S.',dept:'Legal & Admin',color:'#3182ce',tasks:[{title:'Pengurusan IMTA',prompt:'Siapkan dokumen pengurusan IMTA untuk tenaga kerja asing baru.',link:'https://drive.google.com'}]},
+  {name:'Umar H.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Audit Internal',prompt:'Siapkan data untuk audit internal, rekap dokumen pendukung.',link:'https://drive.google.com'}]},
+  {name:'Vina G.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Konsolidasi Laporan',prompt:'Konsolidasi laporan keuangan seluruh entitas untuk laporan gabungan.',link:'https://drive.google.com'}]},
+  {name:'Wawan S.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Rekap Biaya Proyek',prompt:'Rekap seluruh biaya proyek, pisahkan modal dan operasional.',link:'https://drive.google.com'}]},
+  {name:'Xena M.',dept:'Perpajakan',color:'#38a169',tasks:[{title:'Dokumen Transfer Pricing',prompt:'Siapkan dokumen transfer pricing untuk pelaporan tahunan.',link:'https://drive.google.com'}]},
+  {name:'Yoga P.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Rekonsiliasi Piutang',prompt:'Rekonsiliasi piutang usaha dengan aging schedule.',link:'https://drive.google.com'}]},
+  {name:'Zara N.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Laporan Realisasi Anggaran',prompt:'Buat laporan realisasi anggaran per departemen.',link:'https://drive.google.com'}]},
+  {name:'Adi P.',dept:'Legal & Admin',color:'#3182ce',tasks:[{title:'Draft Perjanjian',prompt:'Buat draft perjanjian kerjasama dengan vendor baru.',link:'https://drive.google.com'}]},
+  {name:'Bella C.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Jurnal Pembelian',prompt:'Posting jurnal pembelian bulan ini, pastikan sesuai PO.',link:'https://drive.google.com'}]},
+  {name:'Cakra D.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Analisis Rasio',prompt:'Hitung rasio keuangan: likuiditas, solvabilitas, profitabilitas.',link:'https://drive.google.com'}]},
+  {name:'Dewi S.',dept:'Perpajakan',color:'#38a169',tasks:[{title:'SPT Tahunan Badan',prompt:'Siapkan data dan hitung PPh Badan tahun pajak 2025.',link:'https://drive.google.com'}]},
+  {name:'Elang J.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Monitoring Investasi',prompt:'Buat laporan monitoring investasi jangka pendek dan return-nya.',link:'https://drive.google.com'}]},
+  {name:'Fitri A.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Catatan Atas Laporan',prompt:'Buat catatan atas laporan keuangan (CALK) bulanan.',link:'https://drive.google.com'}]},
+  {name:'Gilang R.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Rekap Biaya Marketing',prompt:'Rekap biaya marketing bulan ini, bandingkan dengan budget.',link:'https://drive.google.com'}]},
+  {name:'Hana K.',dept:'Legal & Admin',color:'#3182ce',tasks:[{title:'Legal Opinion',prompt:'Buat legal opinion terkait kerjasama joint venture.',link:'https://drive.google.com'}]},
+  {name:'Iqbal M.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Audit Trail',prompt:'Siapkan audit trail untuk transaksi keuangan bulan ini.',link:'https://drive.google.com'}]},
+  {name:'Julia R.',dept:'Perpajakan',color:'#38a169',tasks:[{title:'Tax Planning',prompt:'Buat tax planning untuk optimalisasi beban pajak tahun depan.',link:'https://drive.google.com'}]},
+  {name:'Kevin H.',dept:'Finance',color:'#e53e3e',tasks:[{title:'Working Capital',prompt:'Analisis working capital dan identifikasi area perbaikan.',link:'https://drive.google.com'}]},
+  {name:'Laras N.',dept:'Accounting',color:'#d69e2e',tasks:[{title:'Laporan Segmentasi',prompt:'Buat laporan keuangan segmentasi per divisi bisnis.',link:'https://drive.google.com'}]},
+  {name:'Maulana R.',dept:'Finance',color:'#e53e3e',tasks:[{title:'AR Collection',prompt:'Follow up penagihan piutang jatuh tempo, buat laporan aging.',link:'https://drive.google.com'}]}
 ];
 
 function saveData() {
@@ -605,7 +543,7 @@ function renderStats() {
   const active = document.querySelector('.stat-card.active')?.dataset?.dept || 'all';
   let html = '';
   const total = data.length;
-  html += `<div class="stat-card ${active==='all'?'active':''}" data-dept="all" onclick="filterDept('all')" style="--accent:#8b949e">
+  html += `<div class="stat-card ${active==='all'?'active':''}" data-dept="all" onclick="filterDept('all')" style="--accent:#6c63ff">
     <div class="count">${total}</div>
     <div class="label">👥 Semua</div>
     <div class="sub">${Object.keys(depts).length} Divisi</div>
@@ -699,13 +637,13 @@ function openModal(mode, empIdx) {
     document.getElementById('modalTitle').textContent = 'Tambah Karyawan Baru';
     document.getElementById('fName').value = '';
     document.getElementById('fDept').value = 'Finance';
-    document.getElementById('fColor').value = '#58a6ff';
+    document.getElementById('fColor').value = '#6c63ff';
     document.getElementById('tTitle0').value = '';
     document.getElementById('tPrompt0').value = '';
     document.getElementById('tLink0').value = '';
     taskCounter = 1;
     const c = document.getElementById('taskFields');
-    c.innerHTML = `<div class="task-input-group" style="background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:12px;margin-bottom:8px">
+    c.innerHTML = `<div class="task-input-group" style="background:#f5f7fa;border:1.5px solid #e0e4ec;border-radius:8px;padding:12px;margin-bottom:8px">
       <input id="tTitle0" placeholder="Judul tugas" style="margin-bottom:6px">
       <textarea id="tPrompt0" placeholder="Prompt / deskripsi tugas" style="margin-bottom:6px"></textarea>
       <input id="tLink0" placeholder="Link Google Drive">
@@ -723,7 +661,7 @@ function addTaskField() {
   const c = document.getElementById('taskFields');
   const div = document.createElement('div');
   div.className = 'task-input-group';
-  div.style = 'background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:12px;margin-bottom:8px';
+  div.style = 'background:#f5f7fa;border:1.5px solid #e0e4ec;border-radius:8px;padding:12px;margin-bottom:8px';
   div.innerHTML = `
     <input id="tTitle${i}" placeholder="Judul tugas" style="margin-bottom:6px">
     <textarea id="tPrompt${i}" placeholder="Prompt / deskripsi tugas" style="margin-bottom:6px"></textarea>
