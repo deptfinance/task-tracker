@@ -58,6 +58,11 @@ body {
 .hero-art {
   max-width: 180px;
   margin: 0 auto 18px;
+  animation: float 4s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }
 .hero-art svg {
   width: 100%;
@@ -85,9 +90,15 @@ body {
   transform: translateX(-50%);
   width: 120px;
   height: 4px;
-  background: linear-gradient(90deg, var(--primary), var(--accent));
+  background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary));
   border-radius: 2px;
   filter: drop-shadow(0 2px 4px rgba(16, 185, 129, 0.2));
+  background-size: 200% 100%;
+  animation: shimmer 2.5s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 .header p {
   color: var(--text-secondary);
@@ -107,6 +118,11 @@ body {
   font-weight: 600;
   border: 1px solid rgba(14, 165, 233, 0.2);
   backdrop-filter: blur(8px);
+  animation: pulseBadge 3s ease-in-out infinite;
+}
+@keyframes pulseBadge {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.1); }
+  50% { box-shadow: 0 0 0 8px rgba(14, 165, 233, 0); }
 }
 .divider {
   height: 2px;
@@ -616,7 +632,7 @@ body {
     </svg>
   </div>
   <h1>PROMPT AI</h1>
-  <p>Task Management — Kelola Tugas & Prompt Karyawan<span class="zh">｜任務管理 — 管理員工任務與提示詞</span></p>
+  <p>Kelola Tugas & Prompt Karyawan<span class="zh">｜管理員工任務與提示詞</span></p>
   <div class="badge" id="headerCount">Memuat data...<span class="zh">資料載入中...</span></div>
 </div>
 <div class="divider"></div>
