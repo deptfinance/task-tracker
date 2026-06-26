@@ -672,10 +672,6 @@ const DEPT_COLORS = {
   'AKAD 2LOAN/二貸對保':'#38a169','ANALIS 2LOAN/二貸風控':'#3182ce',
   'KEUANGAN/財務':'#805ad5','PENAGIHAN/催收':'#dd6b20','Lainnya':'#718096'
 };
-const DEPT_ICONS = {
-  'Finance':'','Accounting':'','Perpajakan':'','Legal & Admin':'','Lainnya':''
-};
-
 // ===== LOAD FROM AIRTABLE =====
 async function loadData() {
   loading = true;
@@ -743,7 +739,7 @@ function renderStats() {
     const t = depts[d].reduce((s, e) => s + e.tasks.length, 0);
     html += `<div class="stat-card ${active===d?'active':''}" data-dept="${d}" onclick="filterDept('${d}')" style="--accent:${DEPT_COLORS[d]}">
       <div class="count">${c}</div>
-      <div class="label">${DEPT_ICONS[d]} ${d}</div>
+      <div class="label"> ${d}</div>
       <div class="sub">${t} Tugas</div>
     </div>`;
   });
@@ -773,7 +769,7 @@ function renderEmployees() {
       <div class="avatar" style="background:${e.color}">${initials}</div>
       <div class="info">
         <div class="name">${e.name}</div>
-        <div class="dept">${DEPT_ICONS[e.dept]} ${e.dept}</div>
+        <div class="dept"> ${e.dept}</div>
       </div>
       <div class="task-count">${e.tasks.length} tugas</div>
     </div>`;
@@ -790,7 +786,7 @@ function showTasks(idx) {
   let html = `<div class="panel-header">
     <div>
       <h2>${e.name}</h2>
-      <span class="dept-tag" style="background:${e.color}">${DEPT_ICONS[e.dept]} ${e.dept} - ${e.tasks.length} tugas</span>
+      <span class="dept-tag" style="background:${e.color}"> ${e.dept} - ${e.tasks.length} tugas</span>
     </div>
     <button class="btn-close" onclick="closePanel()">X</button>
   </div>`;
