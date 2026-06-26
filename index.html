@@ -839,6 +839,14 @@ function renderEmployees() {
 }
 
 let selectedEmpIdx = -1;
+
+function renderLinks(linkStr) {
+  if (!linkStr) return '';
+  return linkStr.split(',').map(u => u.trim()).filter(u => u.startsWith('http')).map((u, i) =>
+    `<a class="task-link" href="${u}" target="_blank">🔗 Link ${i+1}</a>`
+  ).join('&nbsp; ');
+}
+
 function showTasks(idx) {
   selectedEmpIdx = idx;
   const e = data[idx];
@@ -855,7 +863,7 @@ function showTasks(idx) {
       <div class="task-num">Tugas ${i+1} dari ${e.tasks.length}</div>
       <div class="task-title">${t.title}</div>
       <div class="task-prompt">${t.prompt || ''}</div>
-      ${t.link ? `<a class="task-link" href="${t.link}" target="_blank">Buka Link Google Drive</a>` : ''}
+      ${renderLinks(t.link)}
       <div class="task-actions">
         <button onclick="editTask(${idx}, ${i})">Edit</button>
         <button onclick="deleteTask(${idx}, ${i})">Hapus</button>
@@ -922,7 +930,7 @@ function openModal(mode, empIdx) {
       div.innerHTML = `
         <input id="tTitle${idx}" placeholder="Judul tugas" value="${t.title.replace(/"/g,'&quot;')}" style="margin-bottom:6px">
         <textarea id="tPrompt${idx}" placeholder="Prompt / deskripsi tugas" style="margin-bottom:6px">${(t.prompt||'').replace(/"/g,'&quot;')}</textarea>
-        <input id="tLink${idx}" placeholder="Link Google Drive" value="${(t.link||'').replace(/"/g,'&quot;')}">
+        <input id="tLink${idx}" placeholder="Link Google Drive (bisa multiple, pisah koma)" value="${(t.link||'').replace(/"/g,'&quot;')}">
         <button class="btn danger" style="margin-top:6px;font-size:0.75rem;padding:4px 10px" onclick="this.parentElement.remove()">X Hapus</button>`;
       c.appendChild(div);
     });
@@ -1003,7 +1011,7 @@ async function addTaskToEmp(idx) {
   const title = prompt('Judul tugas:');
   if(!title) return;
   const promptText = prompt('Deskripsi/ prompt:');
-  const link = prompt('Link Google Drive (opsional):');
+  const link = prompt('Link Google Drive (pisah koma kalo lebih dari 1):');
   data[idx].tasks.push({title, prompt: promptText || '', link: link || ''});
   try {
     await airFetch('PATCH', {records: [{id: data[idx].id, fields: makeFields(data[idx])}]});
@@ -1018,7 +1026,7 @@ async function editTask(empIdx, taskIdx) {
   const title = prompt('Judul tugas:', t.title);
   if(!title) return;
   const promptText = prompt('Deskripsi/ prompt:', t.prompt);
-  const link = prompt('Link Google Drive:', t.link);
+  const link = prompt('Link Google Drive (pisah koma kalo lebih dari 1):', t.link);
   data[empIdx].tasks[taskIdx] = {title, prompt: promptText || '', link: link || ''};
   try {
     await airFetch('PATCH', {records: [{id: data[empIdx].id, fields: makeFields(data[empIdx])}]});
