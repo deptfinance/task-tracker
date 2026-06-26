@@ -566,6 +566,11 @@ body {
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
+
+/* ── LANGUAGE TOGGLE ── */
+.lang-zh .id { display: none; }
+.lang-zh .zh { display: inline !important; }
+.zh { display: none; }
 </style>
 </head>
 <body>
@@ -573,25 +578,26 @@ body {
 
 <div class="header">
   <h1>PROMPT AI</h1>
-  <p>Task Management — Kelola Tugas & Prompt Karyawan</p>
-  <div class="badge" id="headerCount">Memuat data...</div>
+  <p>Task Management — Kelola Tugas & Prompt Karyawan<span class="zh">｜任務管理 — 管理員工任務與提示詞</span></p>
+  <div class="badge" id="headerCount">Memuat data...<span class="zh">資料載入中...</span></div>
 </div>
 <div class="divider"></div>
 
 <div class="toolbar">
   <input class="search-box" id="searchBox" placeholder="Cari nama karyawan..." oninput="renderEmployees()">
-  <button class="btn primary" onclick="openModal('add')">+ Tambah</button>
-  <button class="btn" onclick="exportData()">Export JSON</button>
+  <button class="btn primary" onclick="openModal('add')">+ Tambah<span class="zh">+ 新增</span></button>
+  <button class="btn" onclick="exportData()">Export JSON<span class="zh">匯出 JSON</span></button>
   <span class="file-input-wrap">
-    <button class="btn">Import JSON</button>
+    <button class="btn">Import JSON<span class="zh">匯入 JSON</span></button>
     <input type="file" accept=".json" onchange="importData(event)">
   </span>
+  <button class="btn" id="langToggle" onclick="toggleLang()" style="min-width:55px">中文</button>
   <span class="total-count" id="totalCount"></span>
 </div>
 
 <div id="loadingWrap" class="loading-wrap">
   <div class="spinner"></div>
-  <div>Memuat data dari Airtable...</div>
+  <div>Memuat data dari Airtable...<span class="zh">正在從 Airtable 載入資料...</span></div>
 </div>
 <div class="stats" id="statsContainer" style="display:none"></div>
 <div class="employee-grid" id="empGrid" style="display:none"></div>
@@ -1021,6 +1027,18 @@ async function importData(event) {
   };
   reader.readAsText(file);
   event.target.value = '';
+}
+
+// ===== LANGUAGE TOGGLE =====
+function toggleLang() {
+  const isZh = document.body.classList.toggle('lang-zh');
+  document.getElementById('langToggle').textContent = isZh ? 'IND' : '中文';
+  localStorage.setItem('taskTrackerLang', isZh ? 'zh' : 'id');
+}
+// Load saved language
+if(localStorage.getItem('taskTrackerLang') === 'zh') {
+  document.body.classList.add('lang-zh');
+  document.getElementById('langToggle').textContent = 'IND';
 }
 
 loadData();
