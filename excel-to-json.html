@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excel to JSON — Task Tracker Converter</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #f0f4f8;
+  min-height: 100vh;
+  padding: 40px 20px;
+  color: #1a202c;
+}
+.container { max-width: 780px; margin: 0 auto; }
+h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 6px;
+}
+.sub { text-align: center; color: #4a5568; font-size: 0.95rem; margin-bottom: 32px; }
+
+.card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  margin-bottom: 20px;
+}
+
+.upload-area {
+  border: 2px dashed #cbd5e0;
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: #f7fafc;
+}
+.upload-area:hover { border-color: #48bb78; background: #f0fff4; }
+.upload-area.dragover { border-color: #48bb78; background: #f0fff4; }
+.upload-area input { display: none; }
+.upload-icon { font-size: 3rem; margin-bottom: 12px; }
+.upload-text { font-size: 1rem; color: #2d3748; font-weight: 600; }
+.upload-hint { font-size: 0.85rem; color: #718096; margin-top: 6px; }
+.supported { display: inline-block; background: #e2e8f0; padding: 4px 12px; border-radius: 6px; font-size: 0.8rem; margin-top: 10px; color: #4a5568; }
+
+.steps { display: grid; gap: 12px; margin: 24px 0; }
+.step { display: flex; gap: 12px; align-items: flex-start; }
+.step-num {
+  background: #48bb78;
+  color: #fff;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+  margin-top: 2px;
+}
+.step p { color: #4a5568; font-size: 0.92rem; line-height: 1.6; }
+.step strong { color: #2d3748; }
+
+#previewArea { margin-top: 20px; display: none; }
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  margin-top: 12px;
+}
+table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+th {
+  background: #f7fafc;
+  text-align: left;
+  padding: 10px 14px;
+  font-weight: 600;
+  color: #2d3748;
+  border-bottom: 2px solid #e2e8f0;
+  white-space: nowrap;
+}
+td { padding: 10px 14px; border-bottom: 1px solid #edf2f7; vertical-align: top; }
+td.prompt-col { max-width: 250px; white-space: pre-wrap; font-size: 0.82rem; color: #4a5568; }
+tr:hover td { background: #f7fafc; }
+
+.count-badge {
+  display: inline-block;
+  background: #ebf8ff;
+  color: #2b6cb0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.btn-wrap { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+.btn {
+  padding: 11px 24px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-primary { background: #48bb78; color: #fff; }
+.btn-primary:hover { background: #38a169; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(72,187,120,0.3); }
+.btn-secondary { background: #edf2f7; color: #2d3748; }
+.btn-secondary:hover { background: #e2e8f0; }
+.btn-warning { background: #f6e05e; color: #744210; }
+.btn-warning:hover { background: #ecc94b; }
+
+#jsonOutput { display: none; margin-top: 20px; }
+.json-box {
+  background: #1a202c;
+  color: #e2e8f0;
+  border-radius: 10px;
+  padding: 20px;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  font-size: 0.78rem;
+  line-height: 1.7;
+  max-height: 400px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.alert { background: #fff5f5; color: #c53030; padding: 14px 18px; border-radius: 10px; font-size: 0.9rem; margin-top: 12px; border: 1px solid #fed7d7; display: none; }
+
+.instruction-box {
+  background: #fffff0;
+  border: 1px solid #f6e05e;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+.instruction-box h3 { font-size: 1rem; margin-bottom: 10px; color: #744210; }
+.instruction-box ol { padding-left: 20px; }
+.instruction-box li { font-size: 0.9rem; color: #5a5a3c; line-height: 1.8; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Excel to JSON</h1>
+<p class="sub">Konversi data karyawan langsung dari Excel/CSV ke format Task Tracker</p>
+
+<div class="instruction-box">
+  <h3>Cara Siapin File Excel</h3>
+  <ol>
+    <li>Buat kolom: <strong>name</strong>, <strong>dept</strong>, <strong>title</strong>, <strong>prompt</strong>, <strong>link</strong></li>
+    <li>Kolom <strong>dept</strong> isi salah satu dari 13 divisi yang tersedia</li>
+    <li>Kolom <strong>name</strong> dan <strong>title</strong> wajib diisi</li>
+    <li>Kalo 1 karyawan punya &gt;1 tugas, bikin baris baru dengan nama yang sama</li>
+    <li>Simpen sebagai <code>.xlsx</code> atau <code>.csv</code></li>
+  </ol>
+</div>
+
+<div class="card">
+  <div class="upload-area" id="dropZone">
+    <div class="upload-icon">📂</div>
+    <div class="upload-text">Klik atau drag & drop file Excel/CSV</div>
+    <div class="upload-hint">File akan diproses di browser — data tidak dikirim ke server</div>
+    <div class="supported">.xlsx &nbsp; .xls &nbsp; .csv</div>
+    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
+  </div>
+
+  <div id="previewArea">
+    <div class="count-badge" id="countBadge">0 karyawan terdeteksi</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Nama</th>
+            <th>Divisi</th>
+            <th>Judul Tugas</th>
+            <th>Prompt</th>
+            <th>Link</th>
+          </tr>
+        </thead>
+        <tbody id="previewBody"></tbody>
+      </table>
+    </div>
+
+    <div class="btn-wrap">
+      <button class="btn btn-primary" onclick="generateJSON()">Generate JSON</button>
+      <button class="btn btn-secondary" onclick="resetAll()">Reset</button>
+    </div>
+  </div>
+
+  <div id="jsonOutput">
+    <div class="count-badge" id="jsonCount">0 karyawan</div>
+    <div class="json-box" id="jsonBox"></div>
+    <div class="btn-wrap">
+      <button class="btn btn-primary" onclick="downloadJSON()">Download JSON</button>
+      <button class="btn btn-secondary" onclick="copyJSON()">Copy JSON</button>
+    </div>
+  </div>
+
+  <div class="alert" id="alertBox"></div>
+</div>
+
+<p style="text-align:center; color:#718096; font-size:0.85rem; margin-top:24px;">
+  File diproses 100% di browser. Data lo ga kemana-mana.
+</p>
+</div>
+
+<script>
+let rawData = [];
+let groupedData = [];
+
+const VALID_DEPTS = [
+  'AGENSI/代理','CHECKING/風控','BERKAS/文件','AKAD 3LOAN/KTA對保',
+  'ASISTEN SALES/業務助理','MARKETING 3LOAN/KTA業務','MARKETING 2LOAN/二貸業務',
+  'CUSTOMER SERVICE/瑞卡','AKUNTANSI/會計','AKAD 2LOAN/二貸對保',
+  'ANALIS 2LOAN/二貸風控','KEUANGAN/財務','PENAGIHAN/催收'
+];
+
+const DEPT_COLORS = [
+  '#e53e3e','#d69e2e','#38a169','#3182ce','#805ad5','#dd6b20','#319795',
+  '#e53e3e','#d69e2e','#38a169','#3182ce','#805ad5','#dd6b20'
+];
+const COLOR_MAP = {};
+VALID_DEPTS.forEach((d, i) => COLOR_MAP[d] = DEPT_COLORS[i % DEPT_COLORS.length]);
+
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  if(e.dataTransfer.files.length) {
+    fileInput.files = e.dataTransfer.files;
+    processFile(e.dataTransfer.files[0]);
+  }
+});
+fileInput.addEventListener('change', e => {
+  if(e.target.files.length) processFile(e.target.files[0]);
+});
+
+function processFile(file) {
+  clearAlert();
+  const ext = file.name.split('.').pop().toLowerCase();
+  if(!['xlsx','xls','csv'].includes(ext)) {
+    showAlert('Format file tidak didukung. Gunakan .xlsx, .xls, atau .csv');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, {type: 'array'});
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json(sheet, {defval: ''});
+
+      if(!json.length) {
+        showAlert('File kosong. Pastikan ada data di sheet pertama.');
+        return;
+      }
+
+      // Map column names (case insensitive)
+      rawData = json.map(row => {
+        const r = {};
+        Object.keys(row).forEach(k => {
+          const lk = k.toLowerCase().trim();
+          if(lk === 'name' || lk === 'nama' || lk === 'nama karyawan') r.name = String(row[k]).trim();
+          else if(lk === 'dept' || lk === 'divisi' || lk === 'bagian') r.dept = String(row[k]).trim();
+          else if(lk === 'title' || lk === 'judul' || lk === 'judul tugas' || lk === 'tugas') r.title = String(row[k]).trim();
+          else if(lk === 'prompt' || lk === 'deskripsi' || lk === 'prompt tugas') r.prompt = String(row[k]).trim();
+          else if(lk === 'link' || lk === 'url' || lk === 'drive' || lk === 'link drive') r.link = String(row[k]).trim();
+        });
+        return r;
+      });
+
+      // Filter valid rows
+      rawData = rawData.filter(r => r.name && r.name.length > 0);
+
+      if(!rawData.length) {
+        showAlert('Data tidak ditemukan. Pastikan ada kolom "name" / "nama".');
+        return;
+      }
+
+      renderPreview(rawData);
+      document.getElementById('previewArea').style.display = 'block';
+      document.getElementById('jsonOutput').style.display = 'none';
+
+      // Validate depts
+      const badDepts = [...new Set(rawData.map(r => r.dept).filter(d => d && !VALID_DEPTS.includes(d)))];
+      if(badDepts.length) {
+        showAlert(`Divisi tidak dikenal: ${badDepts.join(', ')}. Akan otomatis pakai warna default.`);
+      }
+
+    } catch(err) {
+      showAlert('Gagal baca file: ' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function renderPreview(data) {
+  // Group by name for counting
+  const names = [...new Set(data.map(r => r.name))];
+  document.getElementById('countBadge').textContent = `${names.length} karyawan — ${data.length} baris tugas`;
+
+  let html = '';
+  data.forEach(r => {
+    const deptColor = COLOR_MAP[r.dept] || '#718096';
+    html += `<tr>
+      <td><strong>${esc(r.name)}</strong></td>
+      <td><span style="display:inline-block;background:${deptColor};color:#fff;padding:2px 10px;border-radius:6px;font-size:0.78rem;font-weight:600;">${esc(r.dept)}</span></td>
+      <td>${esc(r.title)}</td>
+      <td class="prompt-col">${esc(r.prompt || '-')}</td>
+      <td style="font-size:0.78rem;color:#4299e1;">${esc(r.link || '-')}</td>
+    </tr>`;
+  });
+  document.getElementById('previewBody').innerHTML = html;
+}
+
+function generateJSON() {
+  // Group by name
+  const map = {};
+  rawData.forEach(r => {
+    const name = r.name;
+    if(!map[name]) {
+      map[name] = {
+        name: name,
+        dept: r.dept || 'Lainnya',
+        tasks: []
+      };
+    }
+    if(r.title) {
+      map[name].tasks.push({
+        title: r.title || 'Tugas',
+        prompt: r.prompt || '',
+        link: r.link || ''
+      });
+    }
+  });
+
+  groupedData = Object.values(map).map(e => ({
+    ...e,
+    color: COLOR_MAP[e.dept] || '#718096',
+    tasks: e.tasks.length ? e.tasks : [{title:'Tugas', prompt:'', link:''}]
+  }));
+
+  document.getElementById('jsonCount').textContent = `${groupedData.length} karyawan`;
+
+  const jsonStr = JSON.stringify(groupedData, null, 2);
+  document.getElementById('jsonBox').textContent = jsonStr;
+  document.getElementById('jsonOutput').style.display = 'block';
+  document.getElementById('jsonOutput').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function downloadJSON() {
+  if(!groupedData.length) return;
+  const jsonStr = JSON.stringify(groupedData, null, 2);
+  const blob = new Blob([jsonStr], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `prompt-ai-data-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function copyJSON() {
+  const text = document.getElementById('jsonBox').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('#jsonOutput .btn-secondary');
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => btn.innerHTML = 'Copy JSON', 2000);
+  });
+}
+
+function resetAll() {
+  rawData = [];
+  groupedData = [];
+  document.getElementById('previewArea').style.display = 'none';
+  document.getElementById('jsonOutput').style.display = 'none';
+  document.getElementById('previewBody').innerHTML = '';
+  document.getElementById('alertBox').style.display = 'none';
+  fileInput.value = '';
+}
+
+function showAlert(msg) {
+  const el = document.getElementById('alertBox');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function clearAlert() {
+  document.getElementById('alertBox').style.display = 'none';
+}
+
+function esc(s) {
+  if(!s) return '';
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+</script>
+</body>
+</html>
