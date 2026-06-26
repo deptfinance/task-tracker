@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PROMPT AI — Task Management</title>
+<title data-i18n="title">PROMPT AI — Task Management</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -573,25 +573,26 @@ body {
 
 <div class="header">
   <h1>PROMPT AI</h1>
-  <p>Task Management — Kelola Tugas & Prompt Karyawan</p>
-  <div class="badge" id="headerCount">Memuat data...</div>
+  <p data-i18n="subtitle">Task Management — Kelola Tugas & Prompt Karyawan</p>
+  <div class="badge" id="headerCount" data-i18n="loading">Memuat data...</div>
 </div>
 <div class="divider"></div>
 
 <div class="toolbar">
-  <input class="search-box" id="searchBox" placeholder="Cari nama karyawan..." oninput="renderEmployees()">
-  <button class="btn primary" onclick="openModal('add')">+ Tambah</button>
-  <button class="btn" onclick="exportData()">Export JSON</button>
+  <input class="search-box" id="searchBox" placeholder="Cari nama karyawan..." data-i18n-placeholder="search_placeholder" oninput="renderEmployees()">
+  <button class="btn primary" onclick="openModal('add')" data-i18n="btn_add">+ Tambah</button>
+  <button class="btn" onclick="exportData()" data-i18n="btn_export">Export JSON</button>
   <span class="file-input-wrap">
-    <button class="btn">Import JSON</button>
+    <button class="btn" data-i18n="btn_import">Import JSON</button>
     <input type="file" accept=".json" onchange="importData(event)">
   </span>
+  <button class="btn" id="langToggle" onclick="toggleLang()" style="min-width:55px">中文</button>
   <span class="total-count" id="totalCount"></span>
 </div>
 
 <div id="loadingWrap" class="loading-wrap">
   <div class="spinner"></div>
-  <div>Memuat data dari Airtable...</div>
+  <div data-i18n="loading_airtable">Memuat data dari Airtable...</div>
 </div>
 <div class="stats" id="statsContainer" style="display:none"></div>
 <div class="employee-grid" id="empGrid" style="display:none"></div>
@@ -601,10 +602,10 @@ body {
 <!-- MODAL ADD/EDIT -->
 <div class="modal" id="modal">
   <div class="modal-content">
-    <h3 id="modalTitle">Tambah Karyawan</h3>
-    <label>Nama Karyawan</label>
-    <input id="fName" placeholder="Nama lengkap">
-    <label>Divisi</label>
+    <h3 id="modalTitle" data-i18n="modal_add_title">Tambah Karyawan</h3>
+    <label data-i18n="label_name">Nama Karyawan</label>
+    <input id="fName" placeholder="Nama lengkap" data-i18n-placeholder="name_placeholder">
+    <label data-i18n="label_dept">Divisi</label>
     <select id="fDept">
       <option value="AGENSI/代理">AGENSI/代理</option>
       <option value="CHECKING/風控">CHECKING/風控</option>
@@ -620,20 +621,20 @@ body {
       <option value="KEUANGAN/財務">KEUANGAN/財務</option>
       <option value="PENAGIHAN/催收">PENAGIHAN/催收</option>
     </select>
-    <label>Warna Avatar</label>
+    <label data-i18n="label_color">Warna Avatar</label>
     <input id="fColor" type="color" value="#6c63ff">
     <hr style="border:none;border-top:1.5px solid #e0e4ec;margin:16px 0">
-    <h4 style="color:#4a5568;font-size:0.9rem;margin-bottom:8px">Tugas</h4>
+    <h4 style="color:#4a5568;font-size:0.9rem;margin-bottom:8px" data-i18n="label_tasks">Tugas</h4>
     <div id="taskFields">
       <div class="task-input-group" style="background:#f5f7fa;border:1.5px solid #e0e4ec;border-radius:8px;padding:12px;margin-bottom:8px">
-        <input id="tTitle0" placeholder="Judul tugas" style="margin-bottom:6px">
-        <textarea id="tPrompt0" placeholder="Prompt / deskripsi tugas" style="margin-bottom:6px"></textarea>
-        <input id="tLink0" placeholder="Link Google Drive">
+        <input id="tTitle0" placeholder="Judul tugas" data-i18n-placeholder="task_title_placeholder" style="margin-bottom:6px">
+        <textarea id="tPrompt0" placeholder="Prompt / deskripsi tugas" data-i18n-placeholder="task_prompt_placeholder" style="margin-bottom:6px"></textarea>
+        <input id="tLink0" placeholder="Link Google Drive" data-i18n-placeholder="task_link_placeholder">
       </div>
     </div>
-    <button class="btn" style="width:100%;margin-top:4px" onclick="addTaskField()">+ Tambah tugas</button>
+    <button class="btn" style="width:100%;margin-top:4px" onclick="addTaskField()" data-i18n="btn_add_task">+ Tambah tugas</button>
     <div class="modal-actions">
-      <button onclick="closeModal()">Batal</button>
+      <button onclick="closeModal()" data-i18n="btn_cancel">Batal</button>
       <button class="primary" id="modalSaveBtn" onclick="saveEmployee()">Simpan</button>
     </div>
   </div>
@@ -702,7 +703,7 @@ async function loadData() {
 }
 
 function parseTasks(tugasField) {
-  if (!tugasField) return [{title:'Belum ada tugas', prompt:'', link:''}];
+  if (!tugasField) return [{title: t('no_tasks'), prompt:'', link:''}];
   try {
     return JSON.parse(tugasField);
   } catch(e) {
@@ -730,8 +731,8 @@ function renderStats() {
   const total = data.length;
   html += `<div class="stat-card ${active==='all'?'active':''}" data-dept="all" onclick="filterDept('all')" style="--accent:#6c63ff">
     <div class="count">${total}</div>
-    <div class="label"> Semua</div>
-    <div class="sub">${Object.keys(depts).length} Divisi</div>
+    <div class="label">${t('all')}</div>
+    <div class="sub">${Object.keys(depts).length} ${t('dept')}</div>
   </div>`;
   Object.keys(DEPT_COLORS).forEach(d => {
     if(!depts[d]) return;
@@ -739,12 +740,12 @@ function renderStats() {
     const t = depts[d].reduce((s, e) => s + e.tasks.length, 0);
     html += `<div class="stat-card ${active===d?'active':''}" data-dept="${d}" onclick="filterDept('${d}')" style="--accent:${DEPT_COLORS[d]}">
       <div class="count">${c}</div>
-      <div class="label"> ${d}</div>
-      <div class="sub">${t} Tugas</div>
+      <div class="label">${d}</div>
+      <div class="sub">${t} ${t('tasks')}</div>
     </div>`;
   });
   container.innerHTML = html;
-  document.getElementById('headerCount').textContent = `${total} Karyawan - ${Object.keys(depts).length} Divisi`;
+  document.getElementById('headerCount').textContent = `${total} ${t('employee')} - ${Object.keys(depts).length} ${t('dept')}`;
 }
 
 let currentFilter = 'all';
@@ -775,7 +776,7 @@ function renderEmployees() {
     </div>`;
   });
   container.innerHTML = html;
-  document.getElementById('totalCount').textContent = `${list.length} dari ${data.length} karyawan ditampilkan`;
+  document.getElementById('totalCount').textContent = `${list.length} ${t('of')} ${data.length} ${t('employees')} ${t('displayed')}`;
 }
 
 let selectedEmpIdx = -1;
@@ -786,23 +787,23 @@ function showTasks(idx) {
   let html = `<div class="panel-header">
     <div>
       <h2>${e.name}</h2>
-      <span class="dept-tag" style="background:${e.color}"> ${e.dept} - ${e.tasks.length} tugas</span>
+      <span class="dept-tag" style="background:${e.color}"> ${e.dept} - ${e.tasks.length} ${t('tasks')}</span>
     </div>
     <button class="btn-close" onclick="closePanel()">X</button>
   </div>`;
   e.tasks.forEach((t, i) => {
     html += `<div class="task-card">
-      <div class="task-num">Tugas ${i+1} dari ${e.tasks.length}</div>
+      <div class="task-num">${t("task_num")}${i+1}${t("task_num_of")}${e.tasks.length}</div>
       <div class="task-title">${t.title}</div>
       <div class="task-prompt">${t.prompt || ''}</div>
-      ${t.link ? `<a class="task-link" href="${t.link}" target="_blank">Buka Link Google Drive</a>` : ''}
+      ${t.link ? `<a class="task-link" href="${t.link}" target="_blank">${t("open_drive")}</a>` : ''}
       <div class="task-actions">
-        <button onclick="editTask(${idx}, ${i})">Edit</button>
-        <button onclick="deleteTask(${idx}, ${i})">Hapus</button>
+        <button onclick="editTask(${idx}, ${i})">${t("edit")}</button>
+        <button onclick="deleteTask(${idx}, ${i})">${t("delete")}</button>
       </div>
     </div>`;
   });
-  html += `<button class="btn primary" style="width:100%;margin-top:8px" onclick="addTaskToEmp(${idx})">+ Tambah Tugas</button>`;
+  html += `<button class="btn primary" style="width:100%;margin-top:8px" onclick="addTaskToEmp(${idx})">${t("add_task")}</button>`;
   panel.innerHTML = html;
   panel.classList.add('visible');
   panel.scrollIntoView({behavior:'smooth', block:'start'});
@@ -828,7 +829,7 @@ function openModal(mode, empIdx) {
   document.getElementById('modal').classList.add('open');
   if(mode === 'add') {
     editingIndex = -1;
-    document.getElementById('modalTitle').textContent = 'Tambah Karyawan Baru';
+    document.getElementById('modalTitle').textContent = t('modal_add_title');
     document.getElementById('fName').value = '';
     document.getElementById('fDept').value = 'Finance';
     document.getElementById('fColor').value = '#6c63ff';
@@ -838,16 +839,16 @@ function openModal(mode, empIdx) {
     taskCounter = 1;
     const c = document.getElementById('taskFields');
     c.innerHTML = `<div class="task-input-group" style="background:#f5f7fa;border:1.5px solid #e0e4ec;border-radius:8px;padding:12px;margin-bottom:8px">
-      <input id="tTitle0" placeholder="Judul tugas" style="margin-bottom:6px">
-      <textarea id="tPrompt0" placeholder="Prompt / deskripsi tugas" style="margin-bottom:6px"></textarea>
-      <input id="tLink0" placeholder="Link Google Drive">
+      <input id="tTitle0" placeholder="Judul tugas" data-i18n-placeholder="task_title_placeholder" style="margin-bottom:6px">
+      <textarea id="tPrompt0" placeholder="Prompt / deskripsi tugas" data-i18n-placeholder="task_prompt_placeholder" style="margin-bottom:6px"></textarea>
+      <input id="tLink0" placeholder="Link Google Drive" data-i18n-placeholder="task_link_placeholder">
     </div>`;
-    document.getElementById('modalSaveBtn').textContent = 'Tambah';
+    document.getElementById('modalSaveBtn').textContent = t('btn_add');
   }
   if(mode === 'edit' && empIdx >= 0) {
     editingIndex = empIdx;
     const e = data[empIdx];
-    document.getElementById('modalTitle').textContent = 'Edit Karyawan';
+    document.getElementById('modalTitle').textContent = t('modal_edit_title');
     document.getElementById('fName').value = e.name;
     document.getElementById('fDept').value = e.dept;
     document.getElementById('fColor').value = e.color;
@@ -860,13 +861,13 @@ function openModal(mode, empIdx) {
       div.className = 'task-input-group';
       div.style = 'background:#f5f7fa;border:1.5px solid #e0e4ec;border-radius:8px;padding:12px;margin-bottom:8px';
       div.innerHTML = `
-        <input id="tTitle${idx}" placeholder="Judul tugas" value="${t.title.replace(/"/g,'&quot;')}" style="margin-bottom:6px">
-        <textarea id="tPrompt${idx}" placeholder="Prompt / deskripsi tugas" style="margin-bottom:6px">${(t.prompt||'').replace(/"/g,'&quot;')}</textarea>
-        <input id="tLink${idx}" placeholder="Link Google Drive" value="${(t.link||'').replace(/"/g,'&quot;')}">
+        <input id="tTitle${idx}" placeholder="Judul tugas" data-i18n-placeholder="task_title_placeholder" value="${t.title.replace(/"/g,'&quot;')}" style="margin-bottom:6px">
+        <textarea id="tPrompt${idx}" placeholder="Prompt / deskripsi tugas" data-i18n-placeholder="task_prompt_placeholder" style="margin-bottom:6px">${(t.prompt||'').replace(/"/g,'&quot;')}</textarea>
+        <input id="tLink${idx}" placeholder="Link Google Drive" data-i18n-placeholder="task_link_placeholder" value="${(t.link||'').replace(/"/g,'&quot;')}">
         <button class="btn danger" style="margin-top:6px;font-size:0.75rem;padding:4px 10px" onclick="this.parentElement.remove()">X Hapus</button>`;
       c.appendChild(div);
     });
-    document.getElementById('modalSaveBtn').textContent = 'Simpan';
+    document.getElementById('modalSaveBtn').textContent = t('btn_save');
   }
 }
 
@@ -881,9 +882,9 @@ function addTaskField() {
   div.className = 'task-input-group';
   div.style = 'background:#f5f7fa;border:1.5px solid #e0e4ec;border-radius:8px;padding:12px;margin-bottom:8px';
   div.innerHTML = `
-    <input id="tTitle${i}" placeholder="Judul tugas" style="margin-bottom:6px">
-    <textarea id="tPrompt${i}" placeholder="Prompt / deskripsi tugas" style="margin-bottom:6px"></textarea>
-    <input id="tLink${i}" placeholder="Link Google Drive">
+    <input id="tTitle${i}" placeholder="Judul tugas" data-i18n-placeholder="task_title_placeholder" style="margin-bottom:6px">
+    <textarea id="tPrompt${i}" placeholder="Prompt / deskripsi tugas" data-i18n-placeholder="task_prompt_placeholder" style="margin-bottom:6px"></textarea>
+    <input id="tLink${i}" placeholder="Link Google Drive" data-i18n-placeholder="task_link_placeholder">
     <button class="btn danger" style="margin-top:6px;font-size:0.75rem;padding:4px 10px" onclick="this.parentElement.remove()">X Hapus</button>`;
   c.appendChild(div);
 }
@@ -910,12 +911,12 @@ async function saveEmployee() {
   const dept = document.getElementById('fDept').value;
   const color = document.getElementById('fColor').value;
   const tasks = collectTasks();
-  if(!name) { alert('Nama karyawan harus diisi!'); return; }
-  if(tasks.length === 0) { alert('Minimal 1 tugas harus diisi!'); return; }
+  if(!name) { alert(t('alert_name_required')); return; }
+  if(tasks.length === 0) { alert(t('alert_task_required')); return; }
 
   const fields = {Nama: name, Divisi: dept, Warna: color, Tugas: JSON.stringify(tasks, null, 2)};
   const btn = document.getElementById('modalSaveBtn');
-  btn.textContent = 'Menyimpan...';
+  btn.textContent = t('btn_saving');
   btn.disabled = true;
 
   try {
@@ -933,17 +934,17 @@ async function saveEmployee() {
     const idx = data.findIndex(e => e.name === name);
     if(idx >= 0) showTasks(idx);
   } catch(e) {
-    alert('Gagal menyimpan: ' + e.message);
+    alert(t('alert_save_failed') + e.message);
   }
-  btn.textContent = editingIndex >= 0 ? 'Simpan' : 'Tambah';
+  btn.textContent = editingIndex >= 0 ? t('btn_save') : t('btn_add');
   btn.disabled = false;
 }
 
 async function addTaskToEmp(idx) {
-  const title = prompt('Judul tugas:');
+  const title = prompt(t('task_title_placeholder') + ':');
   if(!title) return;
-  const promptText = prompt('Deskripsi/ prompt:');
-  const link = prompt('Link Google Drive (opsional):');
+  const promptText = prompt(t('task_prompt_placeholder') + ':');
+  const link = prompt(t('task_link_placeholder') + ':');
   data[idx].tasks.push({title, prompt: promptText || '', link: link || ''});
   try {
     await airFetch('PATCH', {records: [{id: data[idx].id, fields: makeFields(data[idx])}]});
@@ -955,10 +956,10 @@ async function addTaskToEmp(idx) {
 
 async function editTask(empIdx, taskIdx) {
   const t = data[empIdx].tasks[taskIdx];
-  const title = prompt('Judul tugas:', t.title);
+  const title = prompt(t('task_title_placeholder') + ':', t.title);
   if(!title) return;
-  const promptText = prompt('Deskripsi/ prompt:', t.prompt);
-  const link = prompt('Link Google Drive:', t.link);
+  const promptText = prompt(t('task_prompt_placeholder') + ':', t.prompt);
+  const link = prompt(t('task_link_placeholder') + ':', t.link);
   data[empIdx].tasks[taskIdx] = {title, prompt: promptText || '', link: link || ''};
   try {
     await airFetch('PATCH', {records: [{id: data[empIdx].id, fields: makeFields(data[empIdx])}]});
@@ -967,11 +968,11 @@ async function editTask(empIdx, taskIdx) {
 }
 
 async function deleteTask(empIdx, taskIdx) {
-  if(!confirm('Hapus tugas ini?')) return;
+  if(!confirm(t('confirm_delete_task'))) return;
   data[empIdx].tasks.splice(taskIdx, 1);
   if(data[empIdx].tasks.length === 0) {
-    if(!confirm('Karyawan tidak punya tugas lagi. Hapus karyawan juga?')) {
-      data[empIdx].tasks.push({title:'Tugas baru', prompt:'Isi deskripsi tugas', link:''});
+    if(!confirm(t('confirm_delete_emp'))) {
+      data[empIdx].tasks.push({title: t('new_task'), prompt: t('task_prompt_new'), link:''});
     } else {
       const id = data[empIdx].id;
       await airFetch('DELETE', {records: [id]});
@@ -1013,10 +1014,11 @@ async function importData(event) {
         const batch = records.slice(i, i + 10);
         await airFetch('POST', {records: batch});
       }
-      alert(`Berhasil import ${d.length} karyawan!`);
+      alert(t('alert_import_success') + d.length + t('alert_import_success_end'));
       await loadData();
+renderLang();
     } catch(err) {
-      alert('File JSON tidak valid.');
+      alert(t('alert_invalid_json'));
     }
   };
   reader.readAsText(file);
@@ -1024,6 +1026,7 @@ async function importData(event) {
 }
 
 loadData();
+renderLang();
 </script>
 </body>
 </html>
