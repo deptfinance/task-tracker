@@ -606,10 +606,19 @@ body {
     <input id="fName" placeholder="Nama lengkap">
     <label>Divisi</label>
     <select id="fDept">
-      <option value="Finance">Finance</option>
-      <option value="Accounting">Accounting</option>
-      <option value="Perpajakan">Perpajakan</option>
-      <option value="Legal & Admin">Legal & Admin</option>
+      <option value="AGENSI/代理">AGENSI/代理</option>
+      <option value="CHECKING/風控">CHECKING/風控</option>
+      <option value="BERKAS/文件">BERKAS/文件</option>
+      <option value="AKAD 3LOAN/KTA對保">AKAD 3LOAN/KTA對保</option>
+      <option value="ASISTEN SALES/業務助理">ASISTEN SALES/業務助理</option>
+      <option value="MARKETING 3LOAN/KTA業務">MARKETING 3LOAN/KTA業務</option>
+      <option value="MARKETING 2LOAN/二貸業務">MARKETING 2LOAN/二貸業務</option>
+      <option value="CUSTOMER SERVICE/瑞卡">CUSTOMER SERVICE/瑞卡</option>
+      <option value="AKUNTANSI/會計">AKUNTANSI/會計</option>
+      <option value="AKAD 2LOAN/二貸對保">AKAD 2LOAN/二貸對保</option>
+      <option value="ANALIS 2LOAN/二貸風控">ANALIS 2LOAN/二貸風控</option>
+      <option value="KEUANGAN/財務">KEUANGAN/財務</option>
+      <option value="PENAGIHAN/催收">PENAGIHAN/催收</option>
     </select>
     <label>Warna Avatar</label>
     <input id="fColor" type="color" value="#6c63ff">
@@ -656,7 +665,12 @@ let editingIndex = -1;
 let taskCounter = 1;
 
 const DEPT_COLORS = {
-  'Finance': '#e53e3e','Accounting':'#d69e2e','Perpajakan':'#38a169','Legal & Admin':'#3182ce','Lainnya':'#805ad5'
+  'AGENSI/代理':'#e53e3e','CHECKING/風控':'#d69e2e','BERKAS/文件':'#38a169',
+  'AKAD 3LOAN/KTA對保':'#3182ce','ASISTEN SALES/業務助理':'#805ad5',
+  'MARKETING 3LOAN/KTA業務':'#dd6b20','MARKETING 2LOAN/二貸業務':'#319795',
+  'CUSTOMER SERVICE/瑞卡':'#e53e3e','AKUNTANSI/會計':'#d69e2e',
+  'AKAD 2LOAN/二貸對保':'#38a169','ANALIS 2LOAN/二貸風控':'#3182ce',
+  'KEUANGAN/財務':'#805ad5','PENAGIHAN/催收':'#dd6b20','Lainnya':'#718096'
 };
 const DEPT_ICONS = {
   'Finance':'','Accounting':'','Perpajakan':'','Legal & Admin':'','Lainnya':''
