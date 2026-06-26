@@ -152,9 +152,9 @@ tr:hover td { background: #f7fafc; }
 <div class="instruction-box">
   <h3>Cara Siapin File Excel</h3>
   <ol>
-    <li>Buat kolom: <strong>name</strong>, <strong>dept</strong>, <strong>title</strong>, <strong>prompt</strong>, <strong>link</strong></li>
+    <li>Buat kolom: <strong>name</strong>, <strong>dept</strong>, <strong>prompt</strong>, <strong>link</strong></li>
     <li>Kolom <strong>dept</strong> isi salah satu dari 13 divisi yang tersedia</li>
-    <li>Kolom <strong>name</strong> dan <strong>title</strong> wajib diisi</li>
+    <li>Kolom <strong>name</strong> dan <strong>prompt</strong> wajib diisi</li>
     <li>Kalo 1 karyawan punya &gt;1 tugas, bikin baris baru dengan nama yang sama</li>
     <li>Simpen sebagai <code>.xlsx</code> atau <code>.csv</code></li>
   </ol>
@@ -177,7 +177,6 @@ tr:hover td { background: #f7fafc; }
           <tr>
             <th>Nama</th>
             <th>Divisi</th>
-            <th>Judul Tugas</th>
             <th>Prompt</th>
             <th>Link</th>
           </tr>
@@ -273,8 +272,7 @@ function processFile(file) {
           const lk = k.toLowerCase().trim();
           if(lk === 'name' || lk === 'nama' || lk === 'nama karyawan') r.name = String(row[k]).trim();
           else if(lk === 'dept' || lk === 'divisi' || lk === 'bagian') r.dept = String(row[k]).trim();
-          else if(lk === 'title' || lk === 'judul' || lk === 'judul tugas' || lk === 'tugas') r.title = String(row[k]).trim();
-          else if(lk === 'prompt' || lk === 'deskripsi' || lk === 'prompt tugas') r.prompt = String(row[k]).trim();
+          else if(lk === 'prompt' || lk === 'deskripsi' || lk === 'prompt tugas' || lk === 'judul' || lk === 'title' || lk === 'judul tugas' || lk === 'tugas') r.prompt = String(row[k]).trim();
           else if(lk === 'link' || lk === 'url' || lk === 'drive' || lk === 'link drive') r.link = String(row[k]).trim();
         });
         return r;
@@ -316,7 +314,6 @@ function renderPreview(data) {
     html += `<tr>
       <td><strong>${esc(r.name)}</strong></td>
       <td><span style="display:inline-block;background:${deptColor};color:#fff;padding:2px 10px;border-radius:6px;font-size:0.78rem;font-weight:600;">${esc(r.dept)}</span></td>
-      <td>${esc(r.title)}</td>
       <td class="prompt-col">${esc(r.prompt || '-')}</td>
       <td style="font-size:0.78rem;color:#4299e1;">${esc(r.link || '-')}</td>
     </tr>`;
@@ -336,9 +333,11 @@ function generateJSON() {
         tasks: []
       };
     }
-    if(r.title) {
+    if(r.prompt) {
+      // Use first 60 chars of prompt as title fallback
+      const title = (r.prompt.length > 60 ? r.prompt.slice(0, 60) + '...' : r.prompt).split('\n')[0];
       map[name].tasks.push({
-        title: r.title || 'Tugas',
+        title: title,
         prompt: r.prompt || '',
         link: r.link || ''
       });
