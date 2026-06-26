@@ -842,7 +842,7 @@ let selectedEmpIdx = -1;
 
 function renderLinks(linkStr) {
   if (!linkStr) return '';
-  return linkStr.split(',').map(u => u.trim()).filter(u => u.startsWith('http')).map((u, i) =>
+  return linkStr.split(/[;,]/).map(u => u.trim()).filter(u => u.startsWith('http')).map((u, i) =>
     `<a class="task-link" href="${u}" target="_blank">🔗 Link ${i+1}</a>`
   ).join('&nbsp; ');
 }
